@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Joiner;
+import com.google.inject.Inject;
 import com.jambit.jambel.JambelConfiguration;
 import com.jambit.jambel.JambelController;
 
@@ -19,6 +20,7 @@ public class CommandSendingJambelController implements JambelController {
 
 	private JambelCommandSender commandSender;
 
+	@Inject
 	public CommandSendingJambelController(JambelConfiguration configuration, JambelCommandSender commandSender) {
 		this.configuration = configuration;
 		this.commandSender = commandSender;
@@ -43,7 +45,7 @@ public class CommandSendingJambelController implements JambelController {
 	private void sendCommand(String command) {
 		String response = commandSender.send(command);
 		if (!response.equals("OK"))
-			throw new RuntimeException("response to command '" + command + "' was response, not 'OK'");
+			throw new RuntimeException("response to command '" + command + "' was " + response + ", not 'OK'");
 	}
 
 	@Override

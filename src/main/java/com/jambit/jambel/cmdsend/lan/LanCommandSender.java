@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.net.HostAndPort;
+import com.google.inject.Inject;
+import com.jambit.jambel.JambelConfiguration;
 import com.jambit.jambel.cmdsend.JambelCommandSender;
 
 public class LanCommandSender implements JambelCommandSender {
@@ -27,9 +29,10 @@ public class LanCommandSender implements JambelCommandSender {
 
 	private final int readTimeoutInMs;
 
-	public LanCommandSender(HostAndPort hostAndPort, int readTimeoutInMs) {
-		this.hostAndPort = hostAndPort;
-		this.readTimeoutInMs = readTimeoutInMs;
+	@Inject
+	public LanCommandSender(JambelConfiguration configuration) {
+		this.hostAndPort = configuration.getHostAndPort();
+		this.readTimeoutInMs = configuration.getReadTimeoutInMs();
 	}
 
 	@Override
@@ -42,8 +45,9 @@ public class LanCommandSender implements JambelCommandSender {
 
 			// command
 			Writer writer = new OutputStreamWriter(connection.getOutputStream(), Charsets.US_ASCII);
-			PrintWriter printer = new PrintWriter(writer);
+			PrintWriter printer = new PrintWriter(writer, true);
 			printer.println(command);
+
 			// response
 			Reader reader = new InputStreamReader(connection.getInputStream(), Charsets.US_ASCII);
 			BufferedReader bufferedReader = new BufferedReader(reader);

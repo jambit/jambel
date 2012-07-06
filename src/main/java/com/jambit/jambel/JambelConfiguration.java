@@ -21,7 +21,7 @@ public class JambelConfiguration {
 	}
 
 	public int getReadTimeoutInMs() {
-		return 200;
+		return 500;
 	}
 
 }
