@@ -14,6 +14,13 @@
 
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.jambit</groupId>
+			<artifactId>jambel-signallight</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-servlet</artifactId>

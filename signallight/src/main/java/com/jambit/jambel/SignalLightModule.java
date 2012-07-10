@@ -6,7 +6,7 @@ import com.jambit.jambel.light.cmdctrl.CommandControlledSignalLight;
 import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 import com.jambit.jambel.light.cmdctrl.lan.LanCommandSender;
 
-public class JambelModule extends AbstractModule {
+public class SignalLightModule extends AbstractModule {
 
 	@Override
 	protected void configure() {

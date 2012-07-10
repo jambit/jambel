@@ -7,7 +7,7 @@ import com.jambit.jambel.light.SignalLight;
 public class JambelTestRun {
 
 	public static void main(String[] args) throws InterruptedException {
-		Injector injector = Guice.createInjector(new JambelModule());
+		Injector injector = Guice.createInjector(new SignalLightModule());
 		SignalLight controller = injector.getInstance(SignalLight.class);
 
 		SignalLight.LightStatus status = new SignalLight.LightStatus();

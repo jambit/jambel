@@ -25,9 +25,24 @@ public interface SignalLight {
 	}
 
 	static class LightStatus {
-		public LightMode green;
-		public LightMode yellow;
-		public LightMode red;
+		public LightMode green = LightMode.OFF;
+		public LightMode yellow = LightMode.OFF;
+		public LightMode red = LightMode.OFF;
+
+		public LightStatus green(LightMode mode) {
+			green = mode;
+			return this;
+		}
+
+		public LightStatus yellow(LightMode mode) {
+			yellow = mode;
+			return this;
+		}
+
+		public LightStatus red(LightMode mode) {
+			red = mode;
+			return this;
+		}
 
 		@Override
 		public String toString() {
