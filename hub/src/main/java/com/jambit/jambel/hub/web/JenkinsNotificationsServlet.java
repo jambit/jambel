@@ -23,7 +23,6 @@ public class JenkinsNotificationsServlet extends HttpServlet {
 	@Inject
 	public JenkinsNotificationsServlet(JobStatusHub hub) {
 		this.hub = hub;
-		this.hub.registerJob(new Job("test1", "job/test1/"), JobState.Result.SUCCESS);
 	}
 
 	private static class NotificationData {
