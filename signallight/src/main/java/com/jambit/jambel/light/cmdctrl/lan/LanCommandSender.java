@@ -1,4 +1,4 @@
-package com.jambit.jambel.cmdsend.lan;
+package com.jambit.jambel.light.cmdctrl.lan;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,8 @@ import com.google.common.base.Throwables;
 import com.google.common.net.HostAndPort;
 import com.google.inject.Inject;
 import com.jambit.jambel.JambelConfiguration;
-import com.jambit.jambel.cmdsend.JambelCommandSender;
 
-public class LanCommandSender implements JambelCommandSender {
+public final class LanCommandSender implements SignalLightCommandSender {
 
 	private static final Logger logger = LoggerFactory.getLogger(LanCommandSender.class.getName());
 
@@ -41,7 +41,7 @@ public class LanCommandSender implements JambelCommandSender {
 			// open
 			Socket connection = new Socket(hostAndPort.getHostText(), hostAndPort.getPort());
 			connection.setSoTimeout(readTimeoutInMs);
-			logger.debug("connected to jambel at {}", hostAndPort);
+			logger.debug("connected to signal light at {}", hostAndPort);
 
 			// command
 			Writer writer = new OutputStreamWriter(connection.getOutputStream(), Charsets.US_ASCII);
@@ -53,21 +53,21 @@ public class LanCommandSender implements JambelCommandSender {
 			BufferedReader bufferedReader = new BufferedReader(reader);
 			String response = bufferedReader.readLine();
 
-			logger.debug("sent command '{}' and received response '{}' to jambel at {}", new Object[] { command,
+			logger.debug("sent command '{}' and received response '{}' to signal light at {}", new Object[] { command,
 					response, hostAndPort });
 
 			// close
 			connection.close();
-			logger.debug("disconnected from jambel at {}", hostAndPort);
+			logger.debug("disconnected from signal light at {}", hostAndPort);
 
 			return response;
 		}
-		catch (UnknownHostException e3) {
-			throw Throwables.propagate(e3);
+		catch (UnknownHostException e) {
+			throw Throwables.propagate(e);
 		}
-		catch (ConnectException e1) {
-			throw new RuntimeException("cannot connect to jambel at " + hostAndPort
-					+ ", wrong port or is there another existing connection?", e1);
+		catch (ConnectException e) {
+			throw new RuntimeException("cannot connect to signal light at " + hostAndPort
+					+ ", wrong port or is there another open connection to this signal light?", e);
 		}
 		catch (IOException e) {
 			throw Throwables.propagate(e);

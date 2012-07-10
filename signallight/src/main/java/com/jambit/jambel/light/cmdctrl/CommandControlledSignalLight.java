@@ -1,4 +1,4 @@
-package com.jambit.jambel.cmdsend;
+package com.jambit.jambel.light.cmdctrl;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,27 +6,27 @@ import java.util.regex.Pattern;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.jambit.jambel.JambelConfiguration;
-import com.jambit.jambel.JambelController;
+import com.jambit.jambel.light.SignalLight;
 
 /**
- * Sends ASCII commands using a {@link JambelCommandSender}.
+ * Sends ASCII commands using a {@link SignalLightCommandSender}.
  * 
  * @author "Florian Rampp (Florian.Rampp@jambit.com)"
  * 
  */
-public class CommandSendingJambelController implements JambelController {
+public final class CommandControlledSignalLight implements SignalLight {
 
 	private final JambelConfiguration configuration;
 
-	private JambelCommandSender commandSender;
+	private SignalLightCommandSender commandSender;
 
 	@Inject
-	public CommandSendingJambelController(JambelConfiguration configuration, JambelCommandSender commandSender) {
+	public CommandControlledSignalLight(JambelConfiguration configuration, SignalLightCommandSender commandSender) {
 		this.configuration = configuration;
 		this.commandSender = commandSender;
 	}
 
-	private Integer[] toIntValues(JambelStatus status) {
+	private Integer[] toIntValues(LightStatus status) {
 		Integer[] lightValues = { 0, 0, 0, 0 };
 		lightValues[configuration.getNumberForGreen() - 1] = status.green.getCode();
 		lightValues[configuration.getNumberForYellow() - 1] = status.yellow.getCode();
@@ -34,11 +34,11 @@ public class CommandSendingJambelController implements JambelController {
 		return lightValues;
 	}
 
-	private JambelStatus toStatus(Integer[] values) {
-		JambelStatus status = new JambelStatus();
-		status.green = LightStatus.forCode(values[configuration.getNumberForGreen() - 1]);
-		status.yellow = LightStatus.forCode(values[configuration.getNumberForYellow() - 1]);
-		status.red = LightStatus.forCode(values[configuration.getNumberForRed() - 1]);
+	private LightStatus toStatus(Integer[] values) {
+		LightStatus status = new LightStatus();
+		status.green = LightMode.forCode(values[configuration.getNumberForGreen() - 1]);
+		status.yellow = LightMode.forCode(values[configuration.getNumberForYellow() - 1]);
+		status.red = LightMode.forCode(values[configuration.getNumberForRed() - 1]);
 		return status;
 	}
 
@@ -49,15 +49,7 @@ public class CommandSendingJambelController implements JambelController {
 	}
 
 	@Override
-	public void setStatus(JambelStatus newStatus) {
-		Integer[] lightValues = toIntValues(newStatus);
-
-		sendCommand("set_all=" + Joiner.on(',').join(lightValues));
-	}
-
-
-	@Override
-	public JambelStatus getCurrentLightStatus() {
+	public LightStatus getCurrentStatus() {
 		String response = commandSender.send("status");
 		Pattern statusResponsePattern = Pattern.compile("^status=(\\d),(\\d),(\\d),(\\d),(\\d),(\\d)$");
 		Matcher matcher = statusResponsePattern.matcher(response);
@@ -72,6 +64,13 @@ public class CommandSendingJambelController implements JambelController {
 		else {
 			throw new RuntimeException("response " + response + " did not match pattern " + statusResponsePattern);
 		}
+	}
+
+	@Override
+	public void setNewStatus(LightStatus newStatus) {
+		Integer[] lightValues = toIntValues(newStatus);
+
+		sendCommand("set_all=" + Joiner.on(',').join(lightValues));
 	}
 
 	@Override
