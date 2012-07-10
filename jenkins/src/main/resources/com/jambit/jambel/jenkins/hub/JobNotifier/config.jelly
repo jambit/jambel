@@ -1,0 +1,24 @@
+<j:jelly xmlns:j="jelly:core" 
+         xmlns:st="jelly:stapler" 
+         xmlns:d="jelly:define" 
+         xmlns:l="/lib/layout" 
+         xmlns:t="/lib/hudson" 
+         xmlns:f="/lib/form">
+
+  <f:section title="${descriptor.displayName}">
+    <j:if test="${!empty(descriptor.installations)}">
+      <f:entry title="${%Lava Lamp Installation}">
+        <select class="setting-input" name="name">
+          <option value="(Default)">(${%Default})</option>
+          <j:forEach var="inst" items="${descriptor.installations}">
+            <f:option selected="${inst.name==instance.name}" value="${inst.name}">${inst.description}</f:option>
+          </j:forEach>
+        </select>
+      </f:entry>
+    </j:if>
+    <f:entry title="Changes Only" field="changesOnly">
+      <f:checkbox default="false"/>
+    </f:entry>
+  </f:section>                    
+  
+</j:jelly>
