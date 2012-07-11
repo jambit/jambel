@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 /**
  * User: florian
@@ -32,12 +33,12 @@ public class JobResultRetriever {
 		public JobState.Result result;
 	}
 
-	public JobState.Result retrieve(Job job) {
+	public JobState.Result retrieve(URL jobUrl) {
 		HttpClient client = new DefaultHttpClient();
 
 		Gson gson = new Gson();
 		try {
-			String url = job.getUrl() + "/api/json";
+			String url = jobUrl + "/api/json";
 			HttpResponse jobResponse = client.execute(new HttpGet(url));
 			if (jobResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				JsonJob jsonJob = gson.fromJson(new InputStreamReader(
