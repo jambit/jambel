@@ -5,7 +5,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.jambit.jambel.JambelConfiguration;
+import com.jambit.jambel.config.JambelConfiguration;
+import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.SignalLight;
 
 /**
@@ -16,12 +17,12 @@ import com.jambit.jambel.light.SignalLight;
  */
 public final class CommandControlledSignalLight implements SignalLight {
 
-	private final JambelConfiguration configuration;
+	private final SignalLightConfiguration configuration;
 
 	private SignalLightCommandSender commandSender;
 
 	@Inject
-	public CommandControlledSignalLight(JambelConfiguration configuration, SignalLightCommandSender commandSender) {
+	public CommandControlledSignalLight(SignalLightConfiguration configuration, SignalLightCommandSender commandSender) {
 		this.configuration = configuration;
 		this.commandSender = commandSender;
 	}

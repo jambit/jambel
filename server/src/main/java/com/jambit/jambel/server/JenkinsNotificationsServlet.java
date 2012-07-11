@@ -1,10 +1,10 @@
-package com.jambit.jambel.hub.web;
+package com.jambit.jambel.server;
 
 import com.google.common.base.Optional;
 import com.google.gson.Gson;
+import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
-import com.jambit.jambel.hub.jobs.JobStatusHub;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

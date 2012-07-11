@@ -1,0 +1,17 @@
+{
+    "jobs": [
+        "http://localhost:8000/job/test1/",
+        "http://localhost:8000/job/test2/"
+    ],
+
+    "signalLight": {
+        "lights": {
+            "green": 1,
+            "yellow": 2,
+            "red": 3
+        },
+        "host": "ampel2.dev",
+        "port": 10001,
+        "readTimeout": 500
+    }
+}

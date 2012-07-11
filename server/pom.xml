@@ -2,35 +2,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>jambel</artifactId>
 		<groupId>com.jambit</groupId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>jambel-hub</artifactId>
+	<artifactId>jambel-server</artifactId>
+	<packaging>war</packaging>
+
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.jambit</groupId>
-			<artifactId>jambel-config</artifactId>
+			<artifactId>jambel-hub</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.jambit</groupId>
-			<artifactId>jambel-signallight</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-servlet</artifactId>
+			<version>3.0</version>
 		</dependency>
-
 
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.2.1</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>

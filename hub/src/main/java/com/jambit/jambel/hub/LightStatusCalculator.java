@@ -1,11 +1,11 @@
-package com.jambit.jambel.hub.jobs;
+package com.jambit.jambel.hub;
 
 import com.google.inject.Inject;
+import com.jambit.jambel.hub.jobs.JobState;
 import com.jambit.jambel.light.SignalLight;
 
 import java.util.Collection;
 
-import static com.jambit.jambel.hub.jobs.JobState.Result;
 import static com.jambit.jambel.light.SignalLight.LightStatus;
 
 public class LightStatusCalculator {
@@ -17,7 +17,7 @@ public class LightStatusCalculator {
 		this.aggregator = aggregator;
 	}
 
-	public LightStatus calc(JobState.Phase phase, Collection<Result> results) {
+	public LightStatus calc(JobState.Phase phase, Collection<JobState.Result> results) {
 		SignalLight.LightMode activeLightMode;
 		switch (phase) {
 			case STARTED:
@@ -33,7 +33,7 @@ public class LightStatusCalculator {
 				throw new RuntimeException("phase " + phase + " is unknown");
 		}
 
-		Result aggregatedResult = aggregator.aggregate(results);
+		JobState.Result aggregatedResult = aggregator.aggregate(results);
 		switch (aggregatedResult) {
 			case SUCCESS:
 				return new LightStatus().green(activeLightMode);

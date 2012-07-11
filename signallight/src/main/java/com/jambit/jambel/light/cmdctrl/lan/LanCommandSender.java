@@ -11,6 +11,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.net.HostAndPort;
 import com.google.inject.Inject;
-import com.jambit.jambel.JambelConfiguration;
+import com.jambit.jambel.config.JambelConfiguration;
 
 public final class LanCommandSender implements SignalLightCommandSender {
 
@@ -30,7 +31,7 @@ public final class LanCommandSender implements SignalLightCommandSender {
 	private final int readTimeoutInMs;
 
 	@Inject
-	public LanCommandSender(JambelConfiguration configuration) {
+	public LanCommandSender(SignalLightConfiguration configuration) {
 		this.hostAndPort = configuration.getHostAndPort();
 		this.readTimeoutInMs = configuration.getReadTimeoutInMs();
 	}

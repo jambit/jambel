@@ -1,11 +1,11 @@
-package com.jambit.jambel.hub.web;
+package com.jambit.jambel.server;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
 import com.jambit.jambel.SignalLightModule;
-import com.jambit.jambel.hub.jobs.JobModule;
+import com.jambit.jambel.config.ConfigModule;
 
 public class SignalLightHubServletListener extends GuiceServletContextListener {
 
@@ -14,8 +14,9 @@ public class SignalLightHubServletListener extends GuiceServletContextListener {
     return Guice.createInjector(new ServletModule() {
 	    @Override
 	    protected void configureServlets() {
-		    serve("*").with(JenkinsNotificationsServlet.class);
+		    serve("/jobs/").with(JenkinsNotificationsServlet.class);
+		    serve("/signalLights/").with(SignalLightUpdateServlet.class);
 	    }
-    }, new SignalLightModule(), new JobModule());
+    }, new SignalLightModule(), new ConfigModule());
   }
 }

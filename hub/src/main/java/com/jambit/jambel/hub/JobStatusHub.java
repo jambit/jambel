@@ -1,18 +1,16 @@
-package com.jambit.jambel.hub.jobs;
+package com.jambit.jambel.hub;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.jambit.jambel.hub.jobs.Job;
+import com.jambit.jambel.hub.jobs.JobState;
 import com.jambit.jambel.light.SignalLight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.net.www.protocol.http.HttpURLConnection;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Map;
 
-import static com.jambit.jambel.hub.jobs.JobState.Phase;
 import static com.jambit.jambel.light.SignalLight.LightStatus;
 
 public final class JobStatusHub {
@@ -27,15 +25,19 @@ public final class JobStatusHub {
 
 
 	@Inject
-	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JobConfiguration configuration, JobResultRetriever retriever) {
+	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JobResultRetriever retriever) {
 		this.light = light;
 		this.calculator = calculator;
 		this.retriever = retriever;
 
 		this.lastResults = Maps.newLinkedHashMap();
-		for(Job job : configuration.getJobs()) {
+	}
+
+	public void initJobs(Iterable<Job> jobs) {
+		for(Job job : jobs) {
 			JobState.Result result = retriever.retrieve(job);
 			lastResults.put(job, result);
+			logger.info("initialized job '{}' with result '{}'", job, result);
 		}
 	}
 
@@ -63,10 +65,10 @@ public final class JobStatusHub {
 	}
 
 	public void updateSignalLight() {
-		updateLightStatus(Phase.FINISHED);
+		updateLightStatus(JobState.Phase.FINISHED);
 	}
 
-	private void updateLightStatus(Phase currentPhase) {
+	private void updateLightStatus(JobState.Phase currentPhase) {
 		LightStatus newLightStatus = calculator.calc(currentPhase, lastResults.values());
 		light.setNewStatus(newLightStatus);
 	}

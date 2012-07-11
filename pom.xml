@@ -8,7 +8,9 @@
 
 	<modules>
 		<module>signallight</module>
+		<module>server</module>
 		<module>hub</module>
+		<module>config</module>
 	</modules>
 
 

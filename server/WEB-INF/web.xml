@@ -16,7 +16,7 @@
 	</filter-mapping>
 
 	<listener>
-		<listener-class>com.jambit.jambel.hub.web.SignalLightHubServletListener</listener-class>
+		<listener-class>com.jambit.jambel.server.SignalLightHubServletListener</listener-class>
 	</listener>
 
 </web-app>
