@@ -7,15 +7,18 @@ import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
 import com.jambit.jambel.hub.lights.LightStatusCalculator;
 import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.net.URL;
 import java.util.Map;
 
 import static com.jambit.jambel.light.SignalLight.LightStatus;
 
+@Singleton
 public final class JobStatusHub {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobStatusHub.class);
@@ -56,7 +59,7 @@ public final class JobStatusHub {
 	public synchronized void updateJobState(Job job, JobState newState) {
 		Preconditions.checkArgument(lastResults.containsKey(job), "job %s has not been registered", job);
 
-		logger.info("job '{}' updated state: {}", job, newState);
+		logger.debug("job '{}' updated state: {}", job, newState);
 
 		switch (newState.getPhase()) {
 			case FINISHED:
@@ -78,7 +81,11 @@ public final class JobStatusHub {
 
 	private void updateLightStatus(JobState.Phase currentPhase) {
 		LightStatus newLightStatus = calculator.calc(currentPhase, lastResults.values());
-		light.setNewStatus(newLightStatus);
+		try {
+			light.setNewStatus(newLightStatus);
+		} catch (SignalLightNotAvailableException e) {
+			logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
+		}
 	}
 
 }

@@ -12,12 +12,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.jambit.jambel.config.SignalLightConfiguration;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 import com.google.common.net.HostAndPort;
 import com.google.inject.Inject;
 
@@ -63,14 +63,13 @@ public final class LanCommandSender implements SignalLightCommandSender {
 			return response;
 		}
 		catch (UnknownHostException e) {
-			throw Throwables.propagate(e);
+			throw new SignalLightNotAvailableException(hostAndPort, e);
 		}
 		catch (ConnectException e) {
-			throw new RuntimeException("cannot connect to signal light at " + hostAndPort
-					+ ", wrong port or is there another open connection to this signal light?", e);
+			throw new SignalLightNotAvailableException(hostAndPort, e);
 		}
 		catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new SignalLightNotAvailableException(hostAndPort, e);
 		}
 	}
 

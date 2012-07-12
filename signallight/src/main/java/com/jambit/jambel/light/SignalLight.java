@@ -50,15 +50,23 @@ public interface SignalLight {
 		}
 	}
 
+	/**
+	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
+	 */
 	public void setNewStatus(LightStatus newStatus);
 
 	// TODO: blink times, ...
 
+	/**
+	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
+	 */
 	public LightStatus getCurrentStatus();
 
+	/**
+	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
+	 */
 	public void reset();
 
 	boolean isAvailable();
-
 
 }
