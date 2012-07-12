@@ -20,8 +20,12 @@ public class Jambel {
 
 	private Injector injector;
 
-	public Jambel(Injector injector) {
-		this.injector = injector;
+	public Jambel(String configFilePath) {
+		this.injector = Guice.createInjector(new ConfigModule(configFilePath), new SignalLightModule(), new HubModule(), new ServerModule());
+	}
+
+	public JambelConfiguration getConfiguration() {
+		return injector.getInstance(JambelConfiguration.class);
 	}
 
 	public void init() {
@@ -90,11 +94,10 @@ public class Jambel {
 	}
 
 	public static void main(String[] args) {
-		Injector injector = Guice.createInjector(new ConfigModule(), new SignalLightModule(), new HubModule(), new ServerModule());
+		final Jambel jambel = new Jambel("etc/jambel.json");
 
-		JambelConfiguration configuration = injector.getInstance(JambelConfiguration.class);
+		JambelConfiguration configuration = jambel.getConfiguration();
 
-		final Jambel jambel = new Jambel(injector);
 		logger.info("initializing Jambel");
 		jambel.init();
 		logger.info("Jambel is ready to receive notifications. " +

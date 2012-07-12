@@ -1,5 +1,6 @@
 package com.jambit.jambel.config;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.AbstractModule;
@@ -16,6 +17,13 @@ import java.util.Collection;
  */
 public class ConfigModule extends AbstractModule {
 
+	private final String configFilePath;
+
+	public ConfigModule(String configFilePath) {
+		this.configFilePath = configFilePath;
+		Preconditions.checkArgument(new File(configFilePath).isFile(), "config file not found at " + configFilePath);
+	}
+
 	@Override
 	protected void configure() {
 	}
@@ -24,7 +32,7 @@ public class ConfigModule extends AbstractModule {
 	public JambelConfiguration config() {
 		Gson gson = new Gson();
 		try {
-			return gson.fromJson(new FileReader(new File("/home/florian/projects/jambit/jambel/config/src/main/resources/jambel.json")), JambelConfiguration.class);
+			return gson.fromJson(new FileReader(new File(configFilePath)), JambelConfiguration.class);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
