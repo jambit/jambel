@@ -20,7 +20,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.net.HostAndPort;
 import com.google.inject.Inject;
-import com.jambit.jambel.config.JambelConfiguration;
 
 public final class LanCommandSender implements SignalLightCommandSender {
 
@@ -40,7 +39,7 @@ public final class LanCommandSender implements SignalLightCommandSender {
 	public String send(String command) {
 		try {
 			// open
-			Socket connection = new Socket(hostAndPort.getHostText(), hostAndPort.getPort());
+			Socket connection = connect();
 			connection.setSoTimeout(readTimeoutInMs);
 			logger.debug("connected to signal light at {}", hostAndPort);
 
@@ -75,4 +74,17 @@ public final class LanCommandSender implements SignalLightCommandSender {
 		}
 	}
 
+	private Socket connect() throws IOException {
+		return new Socket(hostAndPort.getHostText(), hostAndPort.getPort());
+	}
+
+	@Override
+	public boolean reachesSignalLight() {
+		try {
+			connect();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 }

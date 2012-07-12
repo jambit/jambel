@@ -1,7 +1,8 @@
 {
     "jobs": [
         "http://localhost:8000/job/test1/",
-        "http://localhost:8000/job/test2/"
+        "http://localhost:8000/job/test2/",
+        "http://localhost:8000/job/fdfsdfasgwg/"
     ],
 
     "signalLight": {
@@ -13,5 +14,7 @@
         "host": "ampel2.dev",
         "port": 10001,
         "readTimeout": 500
-    }
+    },
+
+    "httpPort": 10000
 }

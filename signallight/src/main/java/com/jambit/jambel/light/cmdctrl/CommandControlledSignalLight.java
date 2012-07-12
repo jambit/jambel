@@ -1,13 +1,12 @@
 package com.jambit.jambel.light.cmdctrl;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.SignalLight;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Sends ASCII commands using a {@link SignalLightCommandSender}.
@@ -79,4 +78,8 @@ public final class CommandControlledSignalLight implements SignalLight {
 		sendCommand("reset");
 	}
 
+	@Override
+	public boolean isAvailable() {
+		return commandSender.reachesSignalLight();
+	}
 }

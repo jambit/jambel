@@ -1,4 +1,4 @@
-package com.jambit.jambel.server;
+package com.jambit.jambel.server.servlet;
 
 import com.google.common.base.Optional;
 import com.google.gson.Gson;

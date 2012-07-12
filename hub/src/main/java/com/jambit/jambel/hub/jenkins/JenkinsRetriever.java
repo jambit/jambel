@@ -1,5 +1,6 @@
 package com.jambit.jambel.hub.jenkins;
 
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.jambit.jambel.hub.JobResultRetriever;
 import com.jambit.jambel.hub.JobRetriever;
@@ -17,18 +18,21 @@ import java.net.URL;
 
 public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 
+	public static final String JENKINS_JSON_API_SUFFIX = "/api/json";
+
 	private static class JsonJob {
+
 		public String name;
 		public LastBuild lastBuild;
 
 		private static class LastBuild {
-			public int number;
+
 			public String url;
 		}
 	}
 
 	private static class JsonBuild {
-		public int number;
+
 		public JobState.Result result;
 	}
 
@@ -39,9 +43,9 @@ public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 		try {
 			HttpResponse response = client.execute(new HttpGet(url));
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				return gson.fromJson(new InputStreamReader(
-						response.getEntity().getContent()),
-						clazz);
+				InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+				String json = CharStreams.toString(reader);
+				return gson.fromJson(json, clazz);
 			} else {
 				throw new RuntimeException("retrieving JSON object from " + url + " resulted in " + response.getStatusLine().getReasonPhrase());
 			}
@@ -52,9 +56,7 @@ public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 
 	@Override
 	public Job retrieve(URL jobUrl) {
-		HttpClient client = new DefaultHttpClient();
-
-		String url = jobUrl + "/api/json";
+		String url = jsonUrlFor(jobUrl);
 		JsonJob jsonJob = getJson(url, JsonJob.class);
 
 		return new Job(jsonJob.name, jobUrl.toString());
@@ -63,14 +65,21 @@ public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 
 	@Override
 	public JobState.Result retrieve(Job job) {
-		String url = job.getUrl() + "/api/json";
+		String url = jsonUrlFor(job.getUrl());
 		JsonJob jsonJob = getJson(url, JsonJob.class);
 
 		if (jsonJob.lastBuild == null)
 			return JobState.Result.NOT_BUILT;
 
-		JsonBuild lastJsonBuild = getJson(jsonJob.lastBuild.url, JsonBuild.class);
+		JsonBuild lastJsonBuild = getJson(jsonUrlFor(jsonJob.lastBuild.url), JsonBuild.class);
 		return lastJsonBuild.result;
 	}
 
+	private String jsonUrlFor(URL url) {
+		return jsonUrlFor(url.toString());
+	}
+
+	private String jsonUrlFor(String url) {
+		return url + JENKINS_JSON_API_SUFFIX;
+	}
 }

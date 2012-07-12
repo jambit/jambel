@@ -58,4 +58,7 @@ public interface SignalLight {
 
 	public void reset();
 
+	boolean isAvailable();
+
+
 }

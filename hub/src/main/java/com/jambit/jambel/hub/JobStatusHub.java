@@ -26,6 +26,7 @@ public final class JobStatusHub {
 	private final JobResultRetriever jobResultRetriever;
 
 	private final Map<Job, JobState.Result> lastResults;
+	private final JambelConfiguration jambelConfiguration;
 
 
 	@Inject
@@ -34,18 +35,21 @@ public final class JobStatusHub {
 		this.calculator = calculator;
 		this.jobRetriever = jobRetriever;
 		this.jobResultRetriever = jobResultRetriever;
+		this.jambelConfiguration = jambelConfiguration;
 
 		this.lastResults = Maps.newLinkedHashMap();
-
-		initJobs(jambelConfiguration.getJobs());
 	}
 
-	public void initJobs(Iterable<URL> jobs) {
-		for(URL jobUrl : jobs) {
-			Job job = jobRetriever.retrieve(jobUrl);
-			JobState.Result result = jobResultRetriever.retrieve(job);
-			lastResults.put(job, result);
-			logger.info("initialized job '{}' with result '{}'", job, result);
+	public void initJobs() {
+		for(URL jobUrl : jambelConfiguration.getJobs()) {
+			try {
+				Job job = jobRetriever.retrieve(jobUrl);
+				JobState.Result result = jobResultRetriever.retrieve(job);
+				lastResults.put(job, result);
+				logger.info("initialized job '{}' with result '{}'", job, result);
+			} catch (RuntimeException e) {
+				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job", jobUrl);
+			}
 		}
 	}
 

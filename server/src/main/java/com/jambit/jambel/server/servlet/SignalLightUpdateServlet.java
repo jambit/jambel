@@ -1,4 +1,4 @@
-package com.jambit.jambel.server;
+package com.jambit.jambel.server.servlet;
 
 import com.jambit.jambel.hub.JobStatusHub;
 

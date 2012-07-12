@@ -5,4 +5,6 @@ public interface SignalLightCommandSender {
 
 	String send(String command);
 
+	boolean reachesSignalLight();
+
 }

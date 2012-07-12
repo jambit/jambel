@@ -9,12 +9,18 @@ public final class JambelConfiguration {
 
 	private SignalLightConfiguration signalLight;
 
+	private int httpPort;
+
 	public Collection<URL> getJobs() {
 		return jobs;
 	}
 
 	public SignalLightConfiguration getSignalLightConfiguration() {
 		return signalLight;
+	}
+
+	public int getHttpPort() {
+		return httpPort;
 	}
 }
 
