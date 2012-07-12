@@ -1,8 +1,6 @@
 package com.jambit.jambel.hub;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Maps;
 import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.hub.jobs.Job;
@@ -11,7 +9,6 @@ import com.jambit.jambel.light.SignalLight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.Map;
@@ -24,16 +21,18 @@ public final class JobStatusHub {
 
 	private final SignalLight light;
 	private final LightStatusCalculator calculator;
-	private final JobResultRetriever retriever;
+	private final JobRetriever jobRetriever;
+	private final JobResultRetriever jobResultRetriever;
 
 	private final Map<Job, JobState.Result> lastResults;
 
 
 	@Inject
-	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JobResultRetriever retriever, JambelConfiguration jambelConfiguration) {
+	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JambelConfiguration jambelConfiguration, JobRetriever jobRetriever, JobResultRetriever jobResultRetriever) {
 		this.light = light;
 		this.calculator = calculator;
-		this.retriever = retriever;
+		this.jobRetriever = jobRetriever;
+		this.jobResultRetriever = jobResultRetriever;
 
 		this.lastResults = Maps.newLinkedHashMap();
 
@@ -41,10 +40,10 @@ public final class JobStatusHub {
 	}
 
 	public void initJobs(Iterable<URL> jobs) {
-		for(URL job : jobs) {
-			JobState.Result result = retriever.retrieve(job);
-			// TODO: retrieve job name from Jenkins
-			lastResults.put(new Job(job.toString(), job.toString()), result);
+		for(URL jobUrl : jobs) {
+			Job job = jobRetriever.retrieve(jobUrl);
+			JobState.Result result = jobResultRetriever.retrieve(job);
+			lastResults.put(job, result);
 			logger.info("initialized job '{}' with result '{}'", job, result);
 		}
 	}
