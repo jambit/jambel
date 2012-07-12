@@ -1,4 +1,4 @@
 jambel
 ======
 
-three color signal light for monitoring software build mode
+three color signal light for monitoring software build status
