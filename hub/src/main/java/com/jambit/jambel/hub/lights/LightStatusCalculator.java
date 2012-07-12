@@ -1,4 +1,4 @@
-package com.jambit.jambel.hub;
+package com.jambit.jambel.hub.lights;
 
 import com.google.inject.Inject;
 import com.jambit.jambel.hub.jobs.JobState;

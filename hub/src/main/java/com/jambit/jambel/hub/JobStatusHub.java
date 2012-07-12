@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
+import com.jambit.jambel.hub.lights.LightStatusCalculator;
 import com.jambit.jambel.light.SignalLight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,6 @@ public final class JobStatusHub {
 			lastResults.put(job, result);
 			logger.info("initialized job '{}' with result '{}'", job, result);
 		}
-	}
-
-	public void registerJob(Job job, JobState.Result lastResult) {
-		lastResults.put(job, lastResult);
 	}
 
 	public synchronized void updateJobState(Job job, JobState newState) {
