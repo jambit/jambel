@@ -1,14 +1,13 @@
 package com.jambit.jambel.server;
 
-import com.google.inject.Provides;
+import javax.inject.Singleton;
+
+import org.eclipse.jetty.server.Server;
+
 import com.google.inject.servlet.ServletModule;
-import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.server.jetty.JettyServerProvider;
 import com.jambit.jambel.server.servlet.JenkinsNotificationsServlet;
 import com.jambit.jambel.server.servlet.SignalLightUpdateServlet;
-import org.eclipse.jetty.server.Server;
-
-import javax.inject.Singleton;
 
 public class ServerModule extends ServletModule {
 

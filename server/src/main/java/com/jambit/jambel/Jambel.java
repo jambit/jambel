@@ -1,5 +1,9 @@
 package com.jambit.jambel;
 
+import org.eclipse.jetty.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.net.HostAndPort;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -10,9 +14,6 @@ import com.jambit.jambel.hub.HubModule;
 import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.server.ServerModule;
-import org.eclipse.jetty.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Jambel {
 
@@ -21,7 +22,8 @@ public class Jambel {
 	private Injector injector;
 
 	public Jambel(String configFilePath) {
-		this.injector = Guice.createInjector(new ConfigModule(configFilePath), new SignalLightModule(), new HubModule(), new ServerModule());
+		this.injector = Guice.createInjector(new ConfigModule(configFilePath), new SignalLightModule(),
+				new HubModule(), new ServerModule());
 	}
 
 	public JambelConfiguration getConfiguration() {
@@ -31,7 +33,7 @@ public class Jambel {
 	public void init() {
 		testSignalLightConnection();
 
-		initJobs();
+		initHub();
 
 		startServer();
 	}
@@ -47,14 +49,16 @@ public class Jambel {
 		HostAndPort hostAndPort = configuration.getHostAndPort();
 		if (light.isAvailable()) {
 			logger.info("signal light is available at {}", hostAndPort);
-		} else {
+		}
+		else {
 			logger.warn("signal light is not available at {}", hostAndPort);
 		}
 	}
 
-	private void initJobs() {
+	private void initHub() {
 		JobStatusHub hub = injector.getInstance(JobStatusHub.class);
 		hub.initJobs();
+		hub.updateSignalLight();
 	}
 
 
@@ -64,7 +68,8 @@ public class Jambel {
 		try {
 			server.start();
 			logger.info("started embedded HTTP server listening on port {}", configuration.getHttpPort());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -88,7 +93,8 @@ public class Jambel {
 		Server server = injector.getInstance(Server.class);
 		try {
 			server.join();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			// interrupted? => just return
 		}
 	}
@@ -100,10 +106,9 @@ public class Jambel {
 
 		logger.info("initializing Jambel");
 		jambel.init();
-		logger.info("Jambel is ready to receive notifications. " +
-				"Be sure to configure Jenkins Notifications plugin " +
-				"(https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin) for each job " +
-				"to HTTP POST to http://<HOSTNAME>:{}{}", configuration.getHttpPort(), ServerModule.JOBS_PATH);
+		logger.info("Jambel is ready to receive notifications. " + "Be sure to configure Jenkins Notifications plugin "
+				+ "(https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin) for each job "
+				+ "to HTTP POST to http://<HOSTNAME>:{}{}", configuration.getHttpPort(), ServerModule.JOBS_PATH);
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override

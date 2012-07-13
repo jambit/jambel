@@ -1,17 +1,18 @@
 package com.jambit.jambel.server.jetty;
 
+import javax.inject.Inject;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.jambit.jambel.config.JambelConfiguration;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 
-import javax.inject.Inject;
-
-public class JettyServerProvider implements Provider {
+public class JettyServerProvider implements Provider<Server> {
 
 	@Inject
 	private Injector injector;
