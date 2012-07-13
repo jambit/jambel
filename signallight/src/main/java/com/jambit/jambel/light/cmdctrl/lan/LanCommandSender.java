@@ -11,15 +11,15 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.jambit.jambel.config.SignalLightConfiguration;
-import com.jambit.jambel.light.SignalLightNotAvailableException;
-import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.net.HostAndPort;
 import com.google.inject.Inject;
+import com.jambit.jambel.config.SignalLightConfiguration;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
+import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
 
 public final class LanCommandSender implements SignalLightCommandSender {
 
@@ -80,9 +80,10 @@ public final class LanCommandSender implements SignalLightCommandSender {
 	@Override
 	public boolean reachesSignalLight() {
 		try {
-			connect();
+			connect().close();
 			return true;
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			return false;
 		}
 	}
