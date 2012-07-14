@@ -50,13 +50,17 @@ public final class LanCommandSender implements SignalLightCommandSender {
 
 			// command
 			Writer writer = new OutputStreamWriter(connection.getOutputStream(), Charsets.US_ASCII);
-			PrintWriter printer = new PrintWriter(writer, true);
-			printer.println(command);
+			writer.write(command + "\r\n");
+			writer.flush();
 
 			// response
 			Reader reader = new InputStreamReader(connection.getInputStream(), Charsets.US_ASCII);
 			BufferedReader bufferedReader = new BufferedReader(reader);
 			String response = bufferedReader.readLine();
+
+			// sometimes, the signal light returns "\nOK\r\n => read another line
+			if(response.isEmpty())
+				response = bufferedReader.readLine();
 
 			logger.debug("sent command '{}' and received response '{}' to signal light at {}", new Object[]{command, response, hostAndPort});
 
