@@ -8,7 +8,7 @@ public class HubModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(JobRetriever.class).to(JenkinsRetriever.class);
-		bind(JobResultRetriever.class).to(JenkinsRetriever.class);
+		bind(JobStateRetriever.class).to(JenkinsRetriever.class);
 	}
 
 }

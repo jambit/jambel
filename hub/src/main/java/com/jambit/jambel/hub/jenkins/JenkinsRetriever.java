@@ -1,8 +1,9 @@
 package com.jambit.jambel.hub.jenkins;
 
+import com.google.common.base.Optional;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
-import com.jambit.jambel.hub.JobResultRetriever;
+import com.jambit.jambel.hub.JobStateRetriever;
 import com.jambit.jambel.hub.JobRetriever;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
@@ -16,16 +17,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
+public class JenkinsRetriever implements JobRetriever, JobStateRetriever {
 
 	public static final String JENKINS_JSON_API_SUFFIX = "/api/json";
 
 	private static class JsonJob {
 
 		public String name;
-		public LastBuild lastBuild;
+		public JsonBuild lastCompletedBuild;
+		public JsonBuild lastBuild;
 
-		private static class LastBuild {
+		private static class JsonBuild {
 
 			public String url;
 		}
@@ -33,6 +35,7 @@ public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 
 	private static class JsonBuild {
 
+		public boolean building;
 		public JobState.Result result;
 	}
 
@@ -64,15 +67,21 @@ public class JenkinsRetriever implements JobRetriever, JobResultRetriever {
 
 
 	@Override
-	public JobState.Result retrieve(Job job) {
+	public JobState retrieve(Job job) {
 		String url = jsonUrlFor(job.getUrl());
 		JsonJob jsonJob = getJson(url, JsonJob.class);
 
-		if (jsonJob.lastBuild == null)
-			return JobState.Result.NOT_BUILT;
+		JsonBuild lastBuild = getJson(jsonUrlFor(jsonJob.lastBuild.url), JsonBuild.class);
+		JobState.Phase phase = lastBuild.building ? JobState.Phase.STARTED : JobState.Phase.COMPLETED;
 
-		JsonBuild lastJsonBuild = getJson(jsonUrlFor(jsonJob.lastBuild.url), JsonBuild.class);
-		return lastJsonBuild.result;
+		JobState.Result result;
+		if (jsonJob.lastCompletedBuild == null)
+			result = JobState.Result.NOT_BUILT;
+		else {
+			JsonBuild lastCompletedBuild = getJson(jsonUrlFor(jsonJob.lastCompletedBuild.url), JsonBuild.class);
+			result = lastCompletedBuild.result;
+		}
+		return new JobState(phase, Optional.of(result));
 	}
 
 	private String jsonUrlFor(URL url) {

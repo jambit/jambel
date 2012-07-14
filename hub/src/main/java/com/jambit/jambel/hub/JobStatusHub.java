@@ -26,30 +26,30 @@ public final class JobStatusHub {
 	private final SignalLight light;
 	private final LightStatusCalculator calculator;
 	private final JobRetriever jobRetriever;
-	private final JobResultRetriever jobResultRetriever;
+	private final JobStateRetriever jobStateRetriever;
 
-	private final Map<Job, JobState.Result> lastResults;
+	private final Map<Job, JobState> lastResults;
 	private final JambelConfiguration jambelConfiguration;
 
 
 	@Inject
-	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JambelConfiguration jambelConfiguration, JobRetriever jobRetriever, JobResultRetriever jobResultRetriever) {
+	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JambelConfiguration jambelConfiguration, JobRetriever jobRetriever, JobStateRetriever jobStateRetriever) {
 		this.light = light;
 		this.calculator = calculator;
 		this.jobRetriever = jobRetriever;
-		this.jobResultRetriever = jobResultRetriever;
+		this.jobStateRetriever = jobStateRetriever;
 		this.jambelConfiguration = jambelConfiguration;
 
 		this.lastResults = Maps.newLinkedHashMap();
 	}
 
 	public void initJobs() {
-		for(URL jobUrl : jambelConfiguration.getJobs()) {
+		for (URL jobUrl : jambelConfiguration.getJobs()) {
 			try {
 				Job job = jobRetriever.retrieve(jobUrl);
-				JobState.Result result = jobResultRetriever.retrieve(job);
-				lastResults.put(job, result);
-				logger.info("initialized job '{}' with result '{}'", job, result);
+				JobState state = jobStateRetriever.retrieve(job);
+				lastResults.put(job, state);
+				logger.info("initialized job '{}' with phase '{}' and result '{}'", new Object[]{job, state.getPhase(), state.getResult()});
 			} catch (RuntimeException e) {
 				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job", jobUrl);
 			}
@@ -58,34 +58,23 @@ public final class JobStatusHub {
 
 	public synchronized void updateJobState(Job job, JobState newState) {
 		Preconditions.checkArgument(lastResults.containsKey(job), "job %s has not been registered", job);
-
 		logger.debug("job '{}' updated state: {}", job, newState);
 
-		switch (newState.getPhase()) {
-			case FINISHED:
-				Preconditions.checkArgument(newState.getResult().isPresent(), "job state in phase FINISHED did not contain a result");
-				lastResults.put(job, newState.getResult().get());
-				break;
-			case STARTED:
-				break;
-			case COMPLETED:
-				// TODO: what to do here?
-				break;
-		}
-		updateLightStatus(newState.getPhase());
+		lastResults.put(job, newState);
+
+		updateLightStatus();
 	}
 
 	public void updateSignalLight() {
-		updateLightStatus(JobState.Phase.FINISHED);
+		updateLightStatus();
 	}
 
-	private void updateLightStatus(JobState.Phase currentPhase) {
-		LightStatus newLightStatus = calculator.calc(currentPhase, lastResults.values());
+	private void updateLightStatus() {
+		LightStatus newLightStatus = calculator.calc(lastResults.values());
 		try {
 			light.setNewStatus(newLightStatus);
 		} catch (SignalLightNotAvailableException e) {
 			logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
 		}
 	}
-
 }

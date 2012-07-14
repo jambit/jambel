@@ -3,8 +3,8 @@ package com.jambit.jambel.hub;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
 
-public interface JobResultRetriever {
+public interface JobStateRetriever {
 
-	JobState.Result retrieve(Job job);
+	JobState retrieve(Job job);
 
 }
