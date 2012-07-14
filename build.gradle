@@ -1,3 +1,6 @@
+group = 'com.jambit'
+version = '1.0-SNAPSHOT'
+
 subprojects {
 	apply plugin: 'java'
 
@@ -18,28 +21,24 @@ subprojects {
 		manifest.attributes provider: 'gradle'
 	}
 }
-apply plugin: 'java'
 
+apply plugin:'application'
+mainClassName = "com.jambit.jambel.Jambel"
 
-version = '1.0-SNAPSHOT'
-
-uploadArchives {
-	repositories {
-		flatDir {
-			dirs 'repos'
-		}
-	}
+dependencies {
+    compile project(':server')
 }
 
-task dist(type: Zip) {
-	// dependsOn spiJar
-	from 'src/dist'
-	into('libs') {
-	// from spiJar.archivePath
-		from configurations.runtime
-	}
-}
 
-artifacts {
-	archives dist
-}
+//task dist(type: Zip) {
+//	dependsOn assemble
+//	from 'src/dist'
+//	into('libs') {
+////	    from assemble.archivePath
+//		from configurations.runtime
+//	}
+//}
+
+//artifacts {
+//	archives dist
+//}
