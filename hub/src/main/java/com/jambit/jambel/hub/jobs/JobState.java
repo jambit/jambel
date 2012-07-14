@@ -1,39 +1,35 @@
 package com.jambit.jambel.hub.jobs;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Objects;
 
 public final class JobState {
 
 	public static enum Phase {
-		STARTED, COMPLETED, FINISHED;
+		STARTED, COMPLETED, FINISHED
 	}
 
 	public static enum Result {
-		SUCCESS, UNSTABLE, FAILURE, NOT_BUILT, ABORTED;
+		SUCCESS, UNSTABLE, FAILURE, NOT_BUILT, ABORTED
 	}
 
 	private final Phase phase;
-	private final Optional<Result> result;
+	private final Result lastResult;
 
-	public JobState(Phase phase, Optional<Result> result) {
+	public JobState(Phase phase, Result lastResult) {
 		this.phase = phase;
-		this.result = result;
+		this.lastResult = lastResult;
 	}
 
 	public Phase getPhase() {
 		return phase;
 	}
 
-	public Optional<Result> getResult() {
-		return result;
+	public Result getLastResult() {
+		return lastResult;
 	}
 
 	@Override
 	public String toString() {
-		String ret = "";
-		ret += "job " + phase.toString().toLowerCase();
-		if(result.isPresent())
-			ret += " with result '" + result.get().toString().toLowerCase() + "'";
-		return ret;
+		return Objects.toStringHelper(this).add("phase", phase).add("last result", lastResult).toString();
 	}
 }

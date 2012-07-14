@@ -1,7 +1,6 @@
 package com.jambit.jambel.hub.lights;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.inject.Inject;
 import com.jambit.jambel.hub.jobs.JobState;
@@ -41,7 +40,7 @@ public class LightStatusCalculator {
 		}
 
 		// RESULT
-		JobState.Result aggregatedResult = aggregateResult(states);
+		JobState.Result aggregatedResult = aggregateLastResult(states);
 
 		switch (aggregatedResult) {
 			case SUCCESS:
@@ -59,16 +58,11 @@ public class LightStatusCalculator {
 		}
 	}
 
-	private JobState.Result aggregateResult(Iterable<JobState> states) {
-		return resultAggregator.aggregate(FluentIterable.from(states).filter(new Predicate<JobState>() {
-			@Override
-			public boolean apply(JobState input) {
-				return input.getResult().isPresent();
-			}
-		}).transform(new Function<JobState, JobState.Result>() {
+	private JobState.Result aggregateLastResult(Iterable<JobState> states) {
+		return resultAggregator.aggregate(FluentIterable.from(states).transform(new Function<JobState, JobState.Result>() {
 			@Override
 			public JobState.Result apply(JobState input) {
-				return input.getResult().get();
+				return input.getLastResult();
 			}
 		}));
 	}

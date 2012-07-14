@@ -1,5 +1,6 @@
 package com.jambit.jambel.hub;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.jambit.jambel.config.JambelConfiguration;
@@ -28,7 +29,7 @@ public final class JobStatusHub {
 	private final JobRetriever jobRetriever;
 	private final JobStateRetriever jobStateRetriever;
 
-	private final Map<Job, JobState> lastResults;
+	private final Map<Job, JobState> lastStates;
 	private final JambelConfiguration jambelConfiguration;
 
 
@@ -40,7 +41,7 @@ public final class JobStatusHub {
 		this.jobStateRetriever = jobStateRetriever;
 		this.jambelConfiguration = jambelConfiguration;
 
-		this.lastResults = Maps.newLinkedHashMap();
+		this.lastStates = Maps.newLinkedHashMap();
 	}
 
 	public void initJobs() {
@@ -48,21 +49,12 @@ public final class JobStatusHub {
 			try {
 				Job job = jobRetriever.retrieve(jobUrl);
 				JobState state = jobStateRetriever.retrieve(job);
-				lastResults.put(job, state);
-				logger.info("initialized job '{}' with phase '{}' and result '{}'", new Object[]{job, state.getPhase(), state.getResult()});
+				lastStates.put(job, state);
+				logger.info("initialized job '{}' with state '{}'", job, state);
 			} catch (RuntimeException e) {
 				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job", jobUrl);
 			}
 		}
-	}
-
-	public synchronized void updateJobState(Job job, JobState newState) {
-		Preconditions.checkArgument(lastResults.containsKey(job), "job %s has not been registered", job);
-		logger.debug("job '{}' updated state: {}", job, newState);
-
-		lastResults.put(job, newState);
-
-		updateLightStatus();
 	}
 
 	public void updateSignalLight() {
@@ -70,11 +62,32 @@ public final class JobStatusHub {
 	}
 
 	private void updateLightStatus() {
-		LightStatus newLightStatus = calculator.calc(lastResults.values());
+		LightStatus newLightStatus = calculator.calc(lastStates.values());
 		try {
 			light.setNewStatus(newLightStatus);
 		} catch (SignalLightNotAvailableException e) {
 			logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
 		}
+	}
+
+	public void updateJobState(Job job, JobState.Phase phase, Optional<JobState.Result> result) {
+		Preconditions.checkArgument(lastStates.containsKey(job), "job %s has not been registered", job);
+		JobState newState = null;
+		switch (phase) {
+			case STARTED:
+				logger.debug("job '{}' started to build", job);
+				// we have no state when phase is starting => use the last result
+				newState = new JobState(phase, lastStates.get(job).getLastResult());
+				break;
+			case FINISHED:
+			case COMPLETED:
+				newState = new JobState(phase, result.get());
+				break;
+		}
+
+
+		lastStates.put(job, newState);
+
+		updateLightStatus();
 	}
 }

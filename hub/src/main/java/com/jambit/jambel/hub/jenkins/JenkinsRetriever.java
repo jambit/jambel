@@ -1,6 +1,5 @@
 package com.jambit.jambel.hub.jenkins;
 
-import com.google.common.base.Optional;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.jambit.jambel.hub.JobStateRetriever;
@@ -81,7 +80,7 @@ public class JenkinsRetriever implements JobRetriever, JobStateRetriever {
 			JsonBuild lastCompletedBuild = getJson(jsonUrlFor(jsonJob.lastCompletedBuild.url), JsonBuild.class);
 			result = lastCompletedBuild.result;
 		}
-		return new JobState(phase, Optional.of(result));
+		return new JobState(phase, result);
 	}
 
 	private String jsonUrlFor(URL url) {

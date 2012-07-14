@@ -41,8 +41,12 @@ public class JenkinsNotificationsServlet extends HttpServlet {
 			return new Job(name, url);
 		}
 
-		public JobState getJobState() {
-			return new JobState(build.phase, Optional.fromNullable(build.status));
+		public JobState.Phase getPhase() {
+			return build.phase;
+		}
+
+		public Optional<JobState.Result> getResult() {
+			return Optional.fromNullable(build.status);
 		}
 	}
 
@@ -50,7 +54,7 @@ public class JenkinsNotificationsServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Gson gson = new Gson();
 		NotificationData data = gson.fromJson(new InputStreamReader(req.getInputStream()), NotificationData.class);
-		hub.updateJobState(data.getJob(), data.getJobState());
+		hub.updateJobState(data.getJob(), data.getPhase(), data.getResult());
 	}
 
 }
