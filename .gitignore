@@ -14,3 +14,7 @@
 *.iml
 
 **/target
+
+.gradle
+build
+!gradle-wrapper.jar
