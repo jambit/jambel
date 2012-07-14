@@ -66,6 +66,7 @@ public final class JobStatusHub {
 			LightStatus newLightStatus = calculator.calc(lastStates.values());
 			try {
 				light.setNewStatus(newLightStatus);
+				logger.warn("updated signal light with new status '{}'", newLightStatus);
 			} catch (SignalLightNotAvailableException e) {
 				logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
 			}
@@ -73,6 +74,7 @@ public final class JobStatusHub {
 		else {
 			try {
 				light.reset();
+				logger.warn("reset signal light");
 			} catch (SignalLightNotAvailableException e) {
 				logger.warn("could not reset signal light", e);
 			}
