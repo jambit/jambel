@@ -11,7 +11,6 @@ public class ResultAggregator {
 
 	public JobState.Result aggregate(Iterable<JobState.Result> results) {
 		Set<JobState.Result> resultSet = ImmutableSet.copyOf(results);
-		// TODO: do not throw exception!
 		checkArgument(!resultSet.isEmpty(), "there is no result");
 
 		if (resultSet.contains(JobState.Result.FAILURE))
