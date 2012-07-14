@@ -2,6 +2,7 @@ package com.jambit.jambel;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.SignalLight;
@@ -14,7 +15,7 @@ public class SignalLightModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(SignalLight.class).to(CommandControlledSignalLight.class);
-		bind(SignalLightCommandSender.class).to(LanCommandSender.class);
+		bind(SignalLightCommandSender.class).to(LanCommandSender.class).in(Singleton.class);
 	}
 
 	@Provides

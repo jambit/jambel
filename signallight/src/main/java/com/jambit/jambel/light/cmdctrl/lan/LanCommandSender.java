@@ -1,26 +1,24 @@
 package com.jambit.jambel.light.cmdctrl.lan;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Charsets;
 import com.google.common.net.HostAndPort;
+import com.google.common.util.concurrent.Monitor;
 import com.google.inject.Inject;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.light.cmdctrl.SignalLightCommandSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+/**
+ * The invocations of {@link #send(String)} and {@link #reachesSignalLight()} are synchronized with a fair
+ * ordering policy (the thread coming first will enter the monitor first).
+ */
 public final class LanCommandSender implements SignalLightCommandSender {
 
 	private static final Logger logger = LoggerFactory.getLogger(LanCommandSender.class.getName());
@@ -29,14 +27,21 @@ public final class LanCommandSender implements SignalLightCommandSender {
 
 	private final int readTimeoutInMs;
 
+	private Monitor monitor;
+
 	@Inject
 	public LanCommandSender(SignalLightConfiguration configuration) {
 		this.hostAndPort = configuration.getHostAndPort();
 		this.readTimeoutInMs = configuration.getReadTimeoutInMs();
+
+		// a fair monitor is required to keep the order of execution
+		this.monitor = new Monitor(true);
 	}
 
 	@Override
 	public String send(String command) {
+		monitor.enter();
+		logger.debug("Thread {} entered monitor", Thread.currentThread());
 		try {
 			// open
 			Socket connection = connect();
@@ -53,8 +58,7 @@ public final class LanCommandSender implements SignalLightCommandSender {
 			BufferedReader bufferedReader = new BufferedReader(reader);
 			String response = bufferedReader.readLine();
 
-			logger.debug("sent command '{}' and received response '{}' to signal light at {}", new Object[] { command,
-					response, hostAndPort });
+			logger.debug("sent command '{}' and received response '{}' to signal light at {}", new Object[]{command, response, hostAndPort});
 
 			// close
 			connection.close();
@@ -71,6 +75,10 @@ public final class LanCommandSender implements SignalLightCommandSender {
 		catch (IOException e) {
 			throw new SignalLightNotAvailableException(hostAndPort, e);
 		}
+		finally {
+			logger.debug("Thread {} leaving monitor", Thread.currentThread());
+			monitor.leave();
+		}
 	}
 
 	private Socket connect() throws IOException {
@@ -79,12 +87,16 @@ public final class LanCommandSender implements SignalLightCommandSender {
 
 	@Override
 	public boolean reachesSignalLight() {
+		monitor.enter();
 		try {
 			connect().close();
 			return true;
 		}
 		catch (IOException e) {
 			return false;
+		}
+		finally {
+			monitor.leave();
 		}
 	}
 }
