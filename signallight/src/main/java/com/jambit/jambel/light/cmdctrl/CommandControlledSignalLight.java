@@ -45,7 +45,7 @@ public final class CommandControlledSignalLight implements SignalLight {
 	private void sendCommand(String command) {
 		String response = commandSender.send(command);
 		if (!response.equals("OK"))
-			throw new RuntimeException("response to command '" + command + "' was " + response + ", not 'OK'");
+			throw new RuntimeException("response to command '" + command + "' was '" + response + "', not 'OK'");
 	}
 
 	@Override

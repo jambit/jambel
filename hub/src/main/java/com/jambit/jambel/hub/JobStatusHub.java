@@ -66,7 +66,7 @@ public final class JobStatusHub {
 			LightStatus newLightStatus = calculator.calc(lastStates.values());
 			try {
 				light.setNewStatus(newLightStatus);
-				logger.warn("updated signal light with new status '{}'", newLightStatus);
+				logger.debug("updated signal light with new status '{}'", newLightStatus);
 			} catch (SignalLightNotAvailableException e) {
 				logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
 			}
@@ -74,7 +74,7 @@ public final class JobStatusHub {
 		else {
 			try {
 				light.reset();
-				logger.warn("reset signal light");
+				logger.debug("reset signal light");
 			} catch (SignalLightNotAvailableException e) {
 				logger.warn("could not reset signal light", e);
 			}
@@ -86,12 +86,15 @@ public final class JobStatusHub {
 		JobState newState = null;
 		switch (phase) {
 			case STARTED:
-				logger.debug("job '{}' started to build", job);
+				logger.info("job '{}' started to build", job);
+
 				// we have no state when phase is starting => use the last result
 				newState = new JobState(phase, lastStates.get(job).getLastResult());
 				break;
 			case FINISHED:
 			case COMPLETED:
+				logger.info("job '{}' {} to build", job, phase.toString().toLowerCase());
+
 				newState = new JobState(phase, result.get());
 				break;
 		}
