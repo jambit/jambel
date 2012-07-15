@@ -27,7 +27,7 @@ public final class LanCommandSender implements SignalLightCommandSender {
 
 	private final int readTimeoutInMs;
 
-	private Monitor monitor;
+	private final Monitor monitor;
 
 	@Inject
 	public LanCommandSender(SignalLightConfiguration configuration) {
@@ -41,7 +41,6 @@ public final class LanCommandSender implements SignalLightCommandSender {
 	@Override
 	public String send(String command) {
 		monitor.enter();
-		logger.debug("Thread {} entered monitor", Thread.currentThread());
 		try {
 			// open
 			Socket connection = connect();
@@ -80,7 +79,6 @@ public final class LanCommandSender implements SignalLightCommandSender {
 			throw new SignalLightNotAvailableException(hostAndPort, e);
 		}
 		finally {
-			logger.debug("Thread {} leaving monitor", Thread.currentThread());
 			monitor.leave();
 		}
 	}
