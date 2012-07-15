@@ -1,18 +1,16 @@
 package com.jambit.jambel;
 
+import com.jambit.jambel.server.HttpServer;
+import com.jambit.jambel.server.mvc.LimeModule;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.HostAndPort;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.jambit.jambel.config.ConfigModule;
 import com.jambit.jambel.config.JambelConfiguration;
-import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.hub.HubModule;
-import com.jambit.jambel.hub.JobStatusHub;
-import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.server.ServerModule;
 
 public class Jambel {
@@ -23,92 +21,29 @@ public class Jambel {
 
 	public Jambel(String configFilePath) {
 		this.injector = Guice.createInjector(new ConfigModule(configFilePath), new SignalLightModule(),
-				new HubModule(), new ServerModule());
-	}
-
-	public JambelConfiguration getConfiguration() {
-		return injector.getInstance(JambelConfiguration.class);
+				new HubModule(), new ServerModule(), new LimeModule());
 	}
 
 	public void init() {
-		testSignalLightConnection();
-
-		initHub();
-
-		startServer();
+		JambelInitializer initializer = injector.getInstance(JambelInitializer.class);
+		initializer.init();
 	}
 
 	public void destroy() {
-		resetSignalLight();
-	}
-
-	private void testSignalLightConnection() {
-		SignalLight light = injector.getInstance(SignalLight.class);
-		SignalLightConfiguration configuration = injector.getInstance(SignalLightConfiguration.class);
-
-		HostAndPort hostAndPort = configuration.getHostAndPort();
-		if (light.isAvailable()) {
-			logger.info("signal light is available at {}", hostAndPort);
-		}
-		else {
-			logger.warn("signal light is not available at {}", hostAndPort);
-		}
-	}
-
-	private void initHub() {
-		JobStatusHub hub = injector.getInstance(JobStatusHub.class);
-		hub.initJobs();
-		hub.updateSignalLight();
-	}
-
-
-	private void startServer() {
-		Server server = injector.getInstance(Server.class);
-		JambelConfiguration configuration = injector.getInstance(JambelConfiguration.class);
-		try {
-			server.start();
-			logger.info("started embedded HTTP server listening on port {}", configuration.getHttpPort());
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void resetSignalLight() {
-		SignalLight light = injector.getInstance(SignalLight.class);
-		SignalLightConfiguration configuration = injector.getInstance(SignalLightConfiguration.class);
-
-		HostAndPort hostAndPort = configuration.getHostAndPort();
-		if (light.isAvailable()) {
-			logger.info("resetting signal light at {}", hostAndPort);
-			light.reset();
-		}
-		else {
-			logger.warn("cannot reset signal light at {}, it is not available", hostAndPort);
-		}
-
+		JambelDestroyer destroyer = injector.getInstance(JambelDestroyer.class);
+		destroyer.destroy();
 	}
 
 	public void await() {
-		Server server = injector.getInstance(Server.class);
-		try {
-			server.join();
-		}
-		catch (InterruptedException e) {
-			// interrupted? => just return
-		}
+		HttpServer server = injector.getInstance(HttpServer.class);
+		server.await();
 	}
 
 	public static void main(String[] args) {
 		final Jambel jambel = new Jambel("etc/jambel.json");
 
-		JambelConfiguration configuration = jambel.getConfiguration();
-
 		logger.info("initializing Jambel");
 		jambel.init();
-		logger.info("Jambel is ready to receive notifications. " + "Be sure to configure Jenkins Notifications plugin "
-				+ "(https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin) for each job "
-				+ "to HTTP POST to http://<HOSTNAME>:{}{}", configuration.getHttpPort(), ServerModule.JOBS_PATH);
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override

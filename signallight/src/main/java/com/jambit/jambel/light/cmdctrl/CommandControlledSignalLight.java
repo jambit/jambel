@@ -18,7 +18,7 @@ public final class CommandControlledSignalLight implements SignalLight {
 
 	private final SignalLightConfiguration configuration;
 
-	private SignalLightCommandSender commandSender;
+	private final SignalLightCommandSender commandSender;
 
 	@Inject
 	public CommandControlledSignalLight(SignalLightConfiguration configuration, SignalLightCommandSender commandSender) {
@@ -82,4 +82,10 @@ public final class CommandControlledSignalLight implements SignalLight {
 	public boolean isAvailable() {
 		return commandSender.reachesSignalLight();
 	}
+
+	@Override
+	public SignalLightConfiguration getConfiguration() {
+		return configuration;
+	}
+
 }

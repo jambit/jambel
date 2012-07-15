@@ -1,6 +1,10 @@
 package com.jambit.jambel.light;
 
+import com.jambit.jambel.config.SignalLightConfiguration;
+
 public interface SignalLight {
+
+	SignalLightConfiguration getConfiguration();
 
 	enum LightMode {
 		ON(1), OFF(0), BLINK(2), BLINK_INVERS(4), FLASH(3);
@@ -53,19 +57,19 @@ public interface SignalLight {
 	/**
 	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
 	 */
-	public void setNewStatus(LightStatus newStatus);
+	void setNewStatus(LightStatus newStatus);
 
 	// TODO: blink times, ...
 
 	/**
 	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
 	 */
-	public LightStatus getCurrentStatus();
+	LightStatus getCurrentStatus();
 
 	/**
 	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
 	 */
-	public void reset();
+	void reset();
 
 	boolean isAvailable();
 
