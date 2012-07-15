@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 /**
  * The invocations of {@link #send(String)} and {@link #reachesSignalLight()} are synchronized with a fair
@@ -58,10 +56,11 @@ public final class LanCommandSender implements SignalLightCommandSender {
 			String response = bufferedReader.readLine();
 
 			// sometimes, the signal light returns "\nOK\r\n => read another line
-			if(response.isEmpty())
+			if (response.isEmpty())
 				response = bufferedReader.readLine();
 
-			logger.debug("sent command '{}' and received response '{}' to signal light at {}", new Object[]{command, response, hostAndPort});
+			logger.debug("sent command '{}' and received response '{}' to signal light at {}",
+					new Object[]{command, response, hostAndPort});
 
 			// close
 			connection.close();
@@ -84,7 +83,10 @@ public final class LanCommandSender implements SignalLightCommandSender {
 	}
 
 	private Socket connect() throws IOException {
-		return new Socket(hostAndPort.getHostText(), hostAndPort.getPort());
+		Socket socket = new Socket();
+		SocketAddress address = new InetSocketAddress(hostAndPort.getHostText(), hostAndPort.getPort());
+		socket.connect(address, readTimeoutInMs);
+		return socket;
 	}
 
 	@Override
