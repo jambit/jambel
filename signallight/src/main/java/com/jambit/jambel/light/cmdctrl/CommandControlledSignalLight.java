@@ -3,6 +3,8 @@ package com.jambit.jambel.light.cmdctrl;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.jambit.jambel.config.SignalLightConfiguration;
+import com.jambit.jambel.light.LightMode;
+import com.jambit.jambel.light.SignalLightStatus;
 import com.jambit.jambel.light.SignalLight;
 
 import java.util.regex.Matcher;
@@ -26,20 +28,19 @@ public final class CommandControlledSignalLight implements SignalLight {
 		this.commandSender = commandSender;
 	}
 
-	private Integer[] toIntValues(LightStatus status) {
+	private Integer[] toIntValues(SignalLightStatus status) {
 		Integer[] lightValues = { 0, 0, 0, 0 };
-		lightValues[configuration.getNumberForGreen() - 1] = status.green.getCode();
-		lightValues[configuration.getNumberForYellow() - 1] = status.yellow.getCode();
-		lightValues[configuration.getNumberForRed() - 1] = status.red.getCode();
+		lightValues[configuration.getNumberForGreen() - 1] = status.getGreen().getCode();
+		lightValues[configuration.getNumberForYellow() - 1] = status.getYellow().getCode();
+		lightValues[configuration.getNumberForRed() - 1] = status.getRed().getCode();
 		return lightValues;
 	}
 
-	private LightStatus toStatus(Integer[] values) {
-		LightStatus status = new LightStatus();
-		status.green = LightMode.forCode(values[configuration.getNumberForGreen() - 1]);
-		status.yellow = LightMode.forCode(values[configuration.getNumberForYellow() - 1]);
-		status.red = LightMode.forCode(values[configuration.getNumberForRed() - 1]);
-		return status;
+	private SignalLightStatus toStatus(Integer[] values) {
+		LightMode green = LightMode.forCode(values[configuration.getNumberForGreen() - 1]);
+		LightMode yellow = LightMode.forCode(values[configuration.getNumberForYellow() - 1]);
+		LightMode red = LightMode.forCode(values[configuration.getNumberForRed() - 1]);
+		return SignalLightStatus.individual(green, yellow, red);
 	}
 
 	private void sendCommand(String command) {
@@ -49,7 +50,7 @@ public final class CommandControlledSignalLight implements SignalLight {
 	}
 
 	@Override
-	public LightStatus getCurrentStatus() {
+	public SignalLightStatus getCurrentStatus() {
 		String response = commandSender.send("status");
 		Pattern statusResponsePattern = Pattern.compile("^status=(\\d),(\\d),(\\d),(\\d),(\\d),(\\d)$");
 		Matcher matcher = statusResponsePattern.matcher(response);
@@ -67,7 +68,7 @@ public final class CommandControlledSignalLight implements SignalLight {
 	}
 
 	@Override
-	public void setNewStatus(LightStatus newStatus) {
+	public void setNewStatus(SignalLightStatus newStatus) {
 		Integer[] lightValues = toIntValues(newStatus);
 
 		sendCommand("set_all=" + Joiner.on(',').join(lightValues));

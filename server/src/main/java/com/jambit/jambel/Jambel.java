@@ -1,17 +1,14 @@
 package com.jambit.jambel;
 
-import com.jambit.jambel.server.HttpServer;
-import com.jambit.jambel.server.mvc.LimeModule;
-import org.eclipse.jetty.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.jambit.jambel.config.ConfigModule;
-import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.hub.HubModule;
+import com.jambit.jambel.server.HttpServer;
 import com.jambit.jambel.server.ServerModule;
+import com.jambit.jambel.server.mvc.LimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Jambel {
 
@@ -45,7 +42,7 @@ public class Jambel {
 		logger.info("initializing Jambel");
 		jambel.init();
 
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Runtime.getRuntime().addShutdownHook(new Thread("destroyer") {
 			@Override
 			public void run() {
 				logger.info("destroying Jambel");

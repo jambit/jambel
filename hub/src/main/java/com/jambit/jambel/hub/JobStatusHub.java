@@ -9,6 +9,7 @@ import com.jambit.jambel.hub.jobs.JobState;
 import com.jambit.jambel.hub.lights.LightStatusCalculator;
 import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.light.SignalLightNotAvailableException;
+import com.jambit.jambel.light.SignalLightStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
 import java.util.Map;
-
-import static com.jambit.jambel.light.SignalLight.LightStatus;
 
 @Singleton
 public final class JobStatusHub {
@@ -63,7 +62,7 @@ public final class JobStatusHub {
 
 	private void updateLightStatus() {
 		if(!lastStates.isEmpty()) {
-			LightStatus newLightStatus = calculator.calc(lastStates.values());
+			SignalLightStatus newLightStatus = calculator.calc(lastStates.values());
 			try {
 				light.setNewStatus(newLightStatus);
 				logger.debug("updated signal light with new status '{}'", newLightStatus);

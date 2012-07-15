@@ -4,9 +4,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.inject.Inject;
 import com.jambit.jambel.hub.jobs.JobState;
-import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.LightMode;
 
-import static com.jambit.jambel.light.SignalLight.LightStatus;
+import com.jambit.jambel.light.SignalLightStatus;
 
 public class LightStatusCalculator {
 
@@ -20,20 +20,20 @@ public class LightStatusCalculator {
 		this.phaseAggregator = phaseAggregator;
 	}
 
-	public LightStatus calc(Iterable<JobState> states) {
+	public SignalLightStatus calc(Iterable<JobState> states) {
 		// PHASE
 		JobState.Phase aggregatedPhase = aggregatePhase(states);
 
-		SignalLight.LightMode activeLightMode;
+		LightMode activeLightMode;
 		switch (aggregatedPhase) {
 			case STARTED:
-				activeLightMode = SignalLight.LightMode.BLINK;
+				activeLightMode = LightMode.BLINK;
 				break;
 			case COMPLETED:
-				activeLightMode = SignalLight.LightMode.ON;
+				activeLightMode = LightMode.ON;
 				break;
 			case FINISHED:
-				activeLightMode = SignalLight.LightMode.ON;
+				activeLightMode = LightMode.ON;
 				break;
 			default:
 				throw new RuntimeException("phase " + aggregatedPhase + " is unknown");
@@ -44,15 +44,15 @@ public class LightStatusCalculator {
 
 		switch (aggregatedResult) {
 			case SUCCESS:
-				return new LightStatus().green(activeLightMode);
+				return SignalLightStatus.onlyGreen(activeLightMode);
 			case UNSTABLE:
-				return new LightStatus().yellow(activeLightMode);
+				return SignalLightStatus.onlyYellow(activeLightMode);
 			case FAILURE:
-				return new LightStatus().red(activeLightMode);
+				return SignalLightStatus.onlyRed(activeLightMode);
 			case ABORTED:
-				return new LightStatus().green(activeLightMode).red(activeLightMode);
+				return SignalLightStatus.all(activeLightMode).butYellow(LightMode.OFF);
 			case NOT_BUILT:
-				return new LightStatus().green(activeLightMode).red(activeLightMode);
+				return SignalLightStatus.all(activeLightMode).butYellow(LightMode.OFF);
 			default:
 				throw new RuntimeException("result " + aggregatedResult + " is unknown");
 		}
