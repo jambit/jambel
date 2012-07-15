@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 
 @Singleton
@@ -41,6 +42,10 @@ public final class JobStatusHub {
 		this.jambelConfiguration = jambelConfiguration;
 
 		this.lastStates = Maps.newLinkedHashMap();
+	}
+
+	public Map<Job, JobState> getLastStates() {
+		return Collections.unmodifiableMap(lastStates);
 	}
 
 	public void initJobs() {
@@ -103,4 +108,9 @@ public final class JobStatusHub {
 
 		updateLightStatus();
 	}
+
+	public SignalLight getSignalLight() {
+		return light;
+	}
+
 }

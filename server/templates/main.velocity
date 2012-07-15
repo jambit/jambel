@@ -6,12 +6,41 @@
 <link rel="stylesheet" href="/styles/styles.css">
 
 <body>
-<h1>Active jobs</h1>
+<h1>Jambel 1.0</h1>
+
+<h2>HowTo</h2>
+
+<p>
+	Add the <em><a href="https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin">Notification Plugin</a></em>
+	to each Jenkins that shall post its jobs' states to this server.
+</p>
+<p>
+	In the configuration of each job, add an <em>HTTP Notification Endpoint</em> that <em>POST</em>s to
+	<em>$notificationUrl</em>
+</p>
+
+
+<h2>Active jobs</h2>
 
 <ul>
-#foreach( $job in $jobs )
-    <li>
-    	<div>$job.phase</div>
-    </li>
-#end
+	#foreach( $entry in $jobs.entrySet() )
+	#set($job = $entry.key)
+	#set($status = $entry.value)
+	<li>
+		<div>
+			<a href="$job.url">$job.name</a>: $status.lastResult
+			#if( $status.phase == "STARTED" )
+			(currently building)
+			#end
+		</div>
+	</li>
+	#end
 </ul>
+
+<h2>Signal light</h2>
+
+<h3>Configuration</h3>
+#set($config = $light.configuration)
+<div>Location: $config.hostAndPort</div>
+<div>Read timeout: $config.readTimeoutInMs ms</div>
+<h3>Test</h3>

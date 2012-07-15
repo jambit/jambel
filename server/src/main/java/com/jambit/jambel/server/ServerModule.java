@@ -7,7 +7,6 @@ import org.eclipse.jetty.server.Server;
 import com.google.inject.servlet.ServletModule;
 import com.jambit.jambel.server.jetty.JettyServerProvider;
 import com.jambit.jambel.server.servlet.JenkinsNotificationsServlet;
-import com.jambit.jambel.server.servlet.SignalLightUpdateServlet;
 
 public class ServerModule extends ServletModule {
 
@@ -18,7 +17,6 @@ public class ServerModule extends ServletModule {
 		bind(Server.class).toProvider(new JettyServerProvider()).in(Singleton.class);
 
 		serve(JOBS_PATH).with(JenkinsNotificationsServlet.class);
-		serve("/signalLights/").with(SignalLightUpdateServlet.class);
 	}
 
 }
