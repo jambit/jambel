@@ -10,15 +10,23 @@
 
 
 <body>
-<h1>Jambel 1.0</h1>
+<h1>Jambel</h1>
+
+<p>
+	This is the web interface for the Jambel hub. The hub collects the build status from several Jenkins jobs and
+	controls a signal light that outputs the worst outcome of any job. Upon startup, all registered jobs are queried
+	for their current status. Subsequently, the hub listens to notifications of build status changes for updating the
+	signal light.
+</p>
+<p>
+	See <a href="https://github.com/jambit/jambel">https://github.com/jambit/jambel</a> for the source code.
+</p>
 
 <h2>HowTo</h2>
 
 <p>
 	Add the <em><a href="https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin">Notification Plugin</a></em>
-	to each Jenkins that shall post its jobs' states to this server.
-</p>
-<p>
+	to each Jenkins that shall post its jobs' states to this server.<br>
 	In the configuration of each job, add an <em>HTTP Notification Endpoint</em> that <em>POST</em>s to
 	<em>$notificationUrl</em>
 </p>
@@ -48,9 +56,9 @@
 
 <h3>Configuration</h3>
 #set($config = $light.configuration)
-<div>Location: $config.hostAndPort</div>
+<div>Location: $config.hostAndPort (<a href="$lightWebUrl">web interface</a>)</div>
 <div>Read timeout: $config.readTimeoutInMs ms</div>
 
-<h3>Control</h3>
+<h3>Manual control</h3>
 <button data-url="$resetUrl">reset</button>
 <div class="result"></div>

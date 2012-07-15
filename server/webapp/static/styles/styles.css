@@ -1,4 +1,7 @@
 body {
     background: url("/images/bg.png") no-repeat fixed;
-    padding-left: 20px;
+    padding-left: 30px;
+
+    width: 800px;
+    margin: 0;
 }

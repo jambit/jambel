@@ -36,6 +36,9 @@ public class MainController {
 
 		model.put("resetUrl", request.getRequestURL() + "/light/reset");
 		model.put("updateLightUrl", request.getRequestURL() + "/update");
+		model.put("lightWebUrl", "http://" + hub.getSignalLight().getConfiguration().getHostAndPort().getHostText() +
+				":80");
+
 
 		return model;
 	}
