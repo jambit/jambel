@@ -56,8 +56,10 @@ public final class LanCommandSender implements SignalLightCommandSender {
 			String response = bufferedReader.readLine();
 
 			// sometimes, the signal light returns "\nOK\r\n => read another line
-			if (response.isEmpty())
+			if (response.isEmpty()) {
+				logger.warn("received \\nOK\\r\\n instead of expected OK\\r\\n from signal light at {}", hostAndPort);
 				response = bufferedReader.readLine();
+			}
 
 			logger.debug("sent command '{}' and received response '{}' to signal light at {}",
 					new Object[]{command, response, hostAndPort});
