@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>Jambel 1.0</title>
+
+<link rel="stylesheet" href="/styles/styles.css">
+
+<body>
+<h1>Active jobs</h1>
+
+<ul>
+#foreach( $job in $jobs )
+    <li>
+    	<div>$job.phase</div>
+    </li>
+#end
+</ul>
