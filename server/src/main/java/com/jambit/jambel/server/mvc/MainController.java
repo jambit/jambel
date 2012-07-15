@@ -2,11 +2,12 @@ package com.jambit.jambel.server.mvc;
 
 import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.server.ServerModule;
 import org.zdevra.guice.mvc.ModelMap;
 import org.zdevra.guice.mvc.annotations.Controller;
+import org.zdevra.guice.mvc.annotations.Model;
 import org.zdevra.guice.mvc.annotations.Path;
-import org.zdevra.guice.mvc.annotations.RedirectView;
 import org.zdevra.guice.mvc.annotations.View;
 
 import javax.inject.Inject;
@@ -31,21 +32,37 @@ public class MainController {
 		model.put("jobs", hub.getLastStates());
 		model.put("light", hub.getSignalLight());
 		model.put("notificationUrl", request.getRequestURL() + ServerModule.JOBS_PATH);
-		//		model.put("status", hub.getStatus());
+		model.put("lastStatus", hub.getStatus());
+
+		model.put("resetUrl", request.getRequestURL() + "/light/reset");
+		model.put("updateLightUrl", request.getRequestURL() + "/update");
 
 		return model;
 	}
 
 	@Path("/update")
-	@RedirectView(value = "/", contextRelative = true)
-	public void update() {
-		hub.updateSignalLight();
+	@View("postResult")
+	@Model("message")
+	public String update() {
+		try {
+			hub.updateSignalLight();
+			return "success";
+		}
+		catch (SignalLightNotAvailableException e) {
+			return e.getMessage();
+		}
 	}
 
-	@Path("/reset")
-	@RedirectView(value = "/", contextRelative = true)
-	public void reset() {
-		light.reset();
+	@Path("/light/reset")
+	@View("postResult")
+	@Model("message")
+	public String reset() {
+		try {
+			light.reset();
+			return "success";
+		}
+		catch (SignalLightNotAvailableException e) {
+			return e.getMessage();
+		}
 	}
-
 }

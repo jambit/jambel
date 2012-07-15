@@ -4,6 +4,9 @@
 <title>Jambel 1.0</title>
 
 <link rel="stylesheet" href="/styles/styles.css">
+<script src="/scripts/jquery.js"></script>
+<script src="/scripts/scripts.js"></script>
+
 
 <body>
 <h1>Jambel 1.0</h1>
@@ -36,6 +39,9 @@
 	</li>
 	#end
 </ul>
+<div>last status: $lastStatus</div>
+<button data-url="$updateLightUrl">update light</button>
+<div class="result"></div>
 
 <h2>Signal light</h2>
 
@@ -43,4 +49,7 @@
 #set($config = $light.configuration)
 <div>Location: $config.hostAndPort</div>
 <div>Read timeout: $config.readTimeoutInMs ms</div>
-<h3>Test</h3>
+
+<h3>Control</h3>
+<button data-url="$resetUrl">reset</button>
+<div class="result"></div>

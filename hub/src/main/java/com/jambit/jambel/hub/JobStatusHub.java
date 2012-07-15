@@ -32,9 +32,10 @@ public final class JobStatusHub {
 	private final Map<Job, JobState> lastStates;
 	private final JambelConfiguration jambelConfiguration;
 
-
 	@Inject
-	public JobStatusHub(SignalLight light, LightStatusCalculator calculator, JambelConfiguration jambelConfiguration, JobRetriever jobRetriever, JobStateRetriever jobStateRetriever) {
+	public JobStatusHub(
+			SignalLight light, LightStatusCalculator calculator, JambelConfiguration jambelConfiguration,
+			JobRetriever jobRetriever, JobStateRetriever jobStateRetriever) {
 		this.light = light;
 		this.calculator = calculator;
 		this.jobRetriever = jobRetriever;
@@ -55,33 +56,29 @@ public final class JobStatusHub {
 				JobState state = jobStateRetriever.retrieve(job);
 				lastStates.put(job, state);
 				logger.info("initialized job '{}' with state '{}'", job, state);
-			} catch (RuntimeException e) {
-				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job", jobUrl);
+			}
+			catch (RuntimeException e) {
+				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job",
+						jobUrl);
 			}
 		}
 	}
 
+	/**
+	 * @throws SignalLightNotAvailableException
+	 */
 	public void updateSignalLight() {
 		updateLightStatus();
 	}
 
 	private void updateLightStatus() {
-		if(!lastStates.isEmpty()) {
+		if (!lastStates.isEmpty()) {
 			SignalLightStatus newLightStatus = calculator.calc(lastStates.values());
-			try {
-				light.setNewStatus(newLightStatus);
-				logger.debug("updated signal light with new status '{}'", newLightStatus);
-			} catch (SignalLightNotAvailableException e) {
-				logger.warn("could not update signal light with new status '{}'", newLightStatus, e);
-			}
-		}
-		else {
-			try {
-				light.reset();
-				logger.debug("reset signal light");
-			} catch (SignalLightNotAvailableException e) {
-				logger.warn("could not reset signal light", e);
-			}
+			light.setNewStatus(newLightStatus);
+			logger.debug("updated signal light with new status '{}'", newLightStatus);
+		} else {
+			light.reset();
+			logger.debug("reset signal light");
 		}
 	}
 
@@ -106,11 +103,19 @@ public final class JobStatusHub {
 
 		lastStates.put(job, newState);
 
-		updateLightStatus();
+		try {
+			updateLightStatus();
+		}
+		catch (SignalLightNotAvailableException e) {
+			logger.warn("could not update signal light", e);
+		}
 	}
 
 	public SignalLight getSignalLight() {
 		return light;
 	}
 
+	public SignalLightStatus getStatus() {
+		return calculator.calc(lastStates.values());
+	}
 }

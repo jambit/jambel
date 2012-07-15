@@ -4,6 +4,7 @@ import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.server.HttpServer;
 import com.jambit.jambel.server.ServerModule;
 import org.slf4j.Logger;
@@ -53,7 +54,12 @@ public class JambelInitializer {
 
 	private void initHub() {
 		hub.initJobs();
-		hub.updateSignalLight();
+		try {
+			hub.updateSignalLight();
+		}
+		catch (SignalLightNotAvailableException e) {
+			logger.warn("could not update signal light");
+		}
 	}
 
 	private void startServer() {
