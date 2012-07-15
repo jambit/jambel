@@ -3,6 +3,19 @@ dependencies {
     compile project(':hub')
 
     compile group: 'com.google.inject.extensions', name: 'guice-servlet', version: '3.0'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.+'
-    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.+'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.4.v20120524'
+
+    //    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.4.v20120524'
+    // this is a workaround for bug http://issues.gradle.org/browse/GRADLE-2076
+	compile module("org.eclipse.jetty:jetty-server:8.1.4.v20120524") {
+	    dependencies(
+	        "org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016@jar",
+	        "org.eclipse.jetty:jetty-continuation:8.1.4.v20120524",
+	        "org.eclipse.jetty:jetty-http:8.1.4.v20120524"
+	    )
+	}
+
+    compile group: 'org.zdevra', name: 'lime', version: '0.4.1'
+
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.6'
 }
