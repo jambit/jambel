@@ -22,23 +22,25 @@ subprojects {
 	}
 }
 
-apply plugin:'application'
-mainClassName = "com.jambit.jambel.Jambel"
-
-dependencies {
-    compile project(':server')
+repositories {
+    mavenCentral()
 }
 
+configurations {
+    distLibs
+}
 
-//task dist(type: Zip) {
-//	dependsOn assemble
-//	from 'src/dist'
-//	into('libs') {
-////	    from assemble.archivePath
-//		from configurations.runtime
-//	}
-//}
+dependencies {
+    distLibs project(path: ':config'), project(path: ':signallight'), project(path: ':hub'), project(path: ':server')
+}
 
-//artifacts {
-//	archives dist
-//}
+apply plugin:'application'
+
+startScripts.classpath = configurations.distLibs
+mainClassName = "com.jambit.jambel.Jambel"
+
+applicationDistribution.from('etc') {
+    into 'etc'
+}
+applicationDistribution.from project.findProject(':server').file("webapp"), { into 'webapp' }
+applicationDistribution.from configurations.distLibs, { into 'lib' }
