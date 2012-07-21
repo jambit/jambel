@@ -1,7 +1,6 @@
 package com.jambit.jambel.hub;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.hub.jobs.Job;
@@ -83,7 +82,12 @@ public final class JobStatusHub {
 	}
 
 	public void updateJobState(Job job, JobState.Phase phase, Optional<JobState.Result> result) {
-		Preconditions.checkArgument(lastStates.containsKey(job), "job %s has not been registered", job);
+		if(!lastStates.containsKey(job)) {
+			logger.warn("Received a job update for job '{}' but job was not registered. Add job to Jambel " +
+					"configuration first.", job);
+			return;
+		}
+
 		JobState newState = null;
 		switch (phase) {
 			case STARTED:
