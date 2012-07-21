@@ -1,16 +1,17 @@
 package com.jambit.jambel.server;
 
-import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.JambelConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * User: florian
  */
+@Singleton
 public final class HttpServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);

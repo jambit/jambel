@@ -10,7 +10,7 @@ import com.jambit.jambel.server.servlet.JenkinsNotificationsServlet;
 
 public class ServerModule extends ServletModule {
 
-	public static final String JOBS_PATH = "/jobs";
+	public static final String JOBS_PATH = "/jobStatusUpdate";
 
 	@Override
 	protected void configureServlets() {
