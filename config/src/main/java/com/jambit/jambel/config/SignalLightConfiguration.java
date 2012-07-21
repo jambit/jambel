@@ -4,13 +4,9 @@ import com.google.common.net.HostAndPort;
 
 public final class SignalLightConfiguration {
 
-	private static class Lights {
-		private int green;
-		private int yellow;
-		private int red;
+	public static enum SlotPosition {
+		top, bottom
 	}
-
-	private Lights lights;
 
 	private String host;
 
@@ -18,16 +14,18 @@ public final class SignalLightConfiguration {
 
 	private int readTimeout;
 
+	private SlotPosition green;
+
 	public int getNumberForGreen() {
-		return lights.green;
+		return green == SlotPosition.top ? 3 : 1;
 	}
 
 	public int getNumberForYellow() {
-		return lights.yellow;
+		return 2;
 	}
 
 	public int getNumberForRed() {
-		return lights.red;
+		return green == SlotPosition.top ? 1 : 3;
 	}
 
 	public HostAndPort getHostAndPort() {

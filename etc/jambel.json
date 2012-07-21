@@ -1,0 +1,16 @@
+{
+    "jobs": [
+        "http://localhost:8000/job/test1/",
+        "http://localhost:8000/job/test2/",
+        "http://localhost:8000/job/fdfsdfasgwg/"
+    ],
+
+    "signalLight": {
+		"green": "top",
+        "host": "192.168.178.93",
+        "port": 10001,
+        "readTimeout": 500
+    },
+
+    "httpPort": 10000
+}
