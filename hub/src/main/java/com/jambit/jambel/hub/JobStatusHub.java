@@ -65,26 +65,23 @@ public final class JobStatusHub {
 
 	/**
 	 * @throws SignalLightNotAvailableException
+	 *
 	 */
 	public void updateSignalLight() {
 		updateLightStatus();
 	}
 
 	private void updateLightStatus() {
-		if (!lastStates.isEmpty()) {
-			SignalLightStatus newLightStatus = calculator.calc(lastStates.values());
-			light.setNewStatus(newLightStatus);
-			logger.debug("updated signal light with new status '{}'", newLightStatus);
-		} else {
-			light.reset();
-			logger.debug("reset signal light");
-		}
+		SignalLightStatus newLightStatus = calculator.calc(lastStates.values());
+		light.setNewStatus(newLightStatus);
+		logger.debug("updated signal light with new status '{}'", newLightStatus);
 	}
 
 	public void updateJobState(Job job, JobState.Phase phase, Optional<JobState.Result> result) {
-		if(!lastStates.containsKey(job)) {
-			logger.warn("Received a job update for job '{}' but job was not registered. Add job to Jambel " +
-					"configuration first.", job);
+		if (!lastStates.containsKey(job)) {
+			logger.warn(
+					"Received a job update for job '{}' but job was not registered. Add job to Jambel " + "configuration first.",
+					job);
 			return;
 		}
 
