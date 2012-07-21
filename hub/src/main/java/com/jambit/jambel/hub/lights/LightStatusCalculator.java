@@ -2,6 +2,7 @@ package com.jambit.jambel.hub.lights;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import com.jambit.jambel.hub.jobs.JobState;
 import com.jambit.jambel.light.LightMode;
@@ -21,6 +22,10 @@ public class LightStatusCalculator {
 	}
 
 	public SignalLightStatus calc(Iterable<JobState> states) {
+		if(Iterables.isEmpty(states)) {
+			return SignalLightStatus.all(LightMode.OFF);
+		}
+
 		// PHASE
 		JobState.Phase aggregatedPhase = aggregatePhase(states);
 
