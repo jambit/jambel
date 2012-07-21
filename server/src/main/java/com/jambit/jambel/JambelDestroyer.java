@@ -3,8 +3,8 @@ package com.jambit.jambel;
 import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.LightMode;
-import com.jambit.jambel.light.SignalLightStatus;
 import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.SignalLightStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +32,8 @@ public class JambelDestroyer {
 		if (signalLight.isAvailable()) {
 			logger.info("resetting signal light at {}", hostAndPort);
 
-			sendAndWait(SignalLightStatus.all(LightMode.FLASH), 2000);
-
 			SignalLightStatus allOn = SignalLightStatus.all(LightMode.ON);
-			sendAndWait(allOn, 1000);
+			sendAndWait(allOn, 2000);
 			sendAndWait(allOn.butGreen(LightMode.OFF), 500);
 			sendAndWait(allOn.butGreen(LightMode.OFF).butYellow(LightMode.OFF), 500);
 
