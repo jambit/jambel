@@ -25,6 +25,7 @@ The web interface of the Jambel can be found at `http://<HOSTNAME>:<HTTP-PORT>/w
 TODO
 ----
 Here is a list of ideas what to improve:
+- Poll mode if push notifications cannot be made to the jambel (e.g. SZ, Anton!)
 - control multiple signal lights and offer a flexible configuration from jobs to signal lights
 - WebSocket for web UI to monitor the build status in the browser in real time
 - retry sending signal light command after 5 seconds when connection was refused upon the first try (happens from time to time)
