@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.hub.JobStatusHub;
+import com.jambit.jambel.hub.jenkins.JenkinsAdapter;
 import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.light.SignalLightNotAvailableException;
 
@@ -19,17 +20,21 @@ public class JambelInitializer {
 
 	private final SignalLight signalLight;
 
+	private final JenkinsAdapter jenkinsAdapter;
 
 	@Inject
-	public JambelInitializer(JobStatusHub hub, SignalLight signalLight) {
+	public JambelInitializer(JobStatusHub hub, SignalLight signalLight, JenkinsAdapter jenkinsAdapter) {
 		this.hub = hub;
 		this.signalLight = signalLight;
+		this.jenkinsAdapter = jenkinsAdapter;
 	}
 
 	public void init() {
 		testSignalLightConnection();
 
 		initHub();
+		
+		jenkinsAdapter.startWork();
 	}
 
 	private void testSignalLightConnection() {

@@ -13,7 +13,7 @@ import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
 
-public class JenkinsPollingService extends AbstractScheduledService {
+public class JenkinsPollingService extends AbstractScheduledService implements JenkinsAdapter {
 	
 	private final JambelConfiguration jambelConfiguration;
 	private final JobRetriever jobRetriever;
@@ -43,4 +43,23 @@ public class JenkinsPollingService extends AbstractScheduledService {
 		return Scheduler.newFixedDelaySchedule(0, jambelConfiguration.getPollingInterval(), TimeUnit.SECONDS);
 	}
 
+	@Override
+	public void startWork() {
+		start();
+	}
+
+	@Override
+	public void await() {
+		while(isRunning()) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	@Override
+	public void stopWork() {
+		stop();
+	}
 }
