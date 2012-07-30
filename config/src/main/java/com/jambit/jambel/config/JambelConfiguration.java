@@ -10,6 +10,10 @@ public final class JambelConfiguration {
 	private SignalLightConfiguration signalLight;
 
 	private int httpPort;
+	
+	private boolean usePolling;
+	
+	private int pollingInterval;
 
 	public Collection<URL> getJobs() {
 		return jobs;
@@ -21,6 +25,14 @@ public final class JambelConfiguration {
 
 	public int getHttpPort() {
 		return httpPort;
+	}
+	
+	public int getPollingInterval() {
+		return pollingInterval;
+	}
+	
+	public boolean isUsePolling() {
+		return usePolling;
 	}
 }
 
