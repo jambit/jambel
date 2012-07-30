@@ -15,7 +15,8 @@ The file `/etc/jambel.json` is used for configuring the Jambel. All jobs that ar
 - the position of the green light (`top` vs. `bottom`)
 - the host and port of the signal light
 - the timeout that is used when waiting for a reply and upon establishing a TCP connection
-Furthermore, the port of the web interface can be configured.
+- the port of the web interface can be configured
+- polling mode and polling interval (web interface is deactivated when using polling mode)
 
 Web UI
 ------
@@ -25,7 +26,6 @@ The web interface of the Jambel can be found at `http://<HOSTNAME>:<HTTP-PORT>/w
 TODO
 ----
 Here is a list of ideas what to improve:
-- Poll mode if push notifications cannot be made to the jambel (e.g. SZ, Anton!)
 - control multiple signal lights and offer a flexible configuration from jobs to signal lights
 - WebSocket for web UI to monitor the build status in the browser in real time
 - retry sending signal light command after 5 seconds when connection was refused upon the first try (happens from time to time)
