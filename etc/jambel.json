@@ -12,5 +12,7 @@
         "readTimeout": 500
     },
 
-    "httpPort": 10000
+    "httpPort": 10000,
+    "usePolling": false,
+    "pollingInterval": 15
 }

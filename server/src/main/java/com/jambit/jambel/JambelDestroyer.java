@@ -2,6 +2,7 @@ package com.jambit.jambel;
 
 import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.SignalLightConfiguration;
+import com.jambit.jambel.hub.jenkins.JenkinsAdapter;
 import com.jambit.jambel.light.LightMode;
 import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.light.SignalLightStatus;
@@ -15,13 +16,17 @@ public class JambelDestroyer {
 	private static final Logger logger = LoggerFactory.getLogger(JambelDestroyer.class);
 
 	private final SignalLight signalLight;
+	
+	private final JenkinsAdapter jenkinsAdapter;
 
 	@Inject
-	public JambelDestroyer(SignalLight signalLight) {
+	public JambelDestroyer(SignalLight signalLight, JenkinsAdapter jenkinsAdapter) {
 		this.signalLight = signalLight;
+		this.jenkinsAdapter = jenkinsAdapter;
 	}
 
 	public void destroy() {
+		jenkinsAdapter.stopWork();
 		resetSignalLight();
 	}
 
