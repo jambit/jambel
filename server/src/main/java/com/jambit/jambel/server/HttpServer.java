@@ -1,6 +1,5 @@
 package com.jambit.jambel.server;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.jetty.server.Server;
@@ -22,7 +21,6 @@ public final class HttpServer implements JenkinsAdapter {
 
 	private final JambelConfiguration jambelConfiguration;
 
-	@Inject
 	public HttpServer(Server server, JambelConfiguration jambelConfiguration) {
 		this.server = server;
 		this.jambelConfiguration = jambelConfiguration;

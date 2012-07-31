@@ -3,6 +3,8 @@ package com.jambit.jambel.hub.jenkins;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Singleton;
+
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.inject.Inject;
@@ -13,6 +15,7 @@ import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
 
+@Singleton
 public class JenkinsPollingService extends AbstractScheduledService implements JenkinsAdapter {
 	
 	private final JambelConfiguration jambelConfiguration;

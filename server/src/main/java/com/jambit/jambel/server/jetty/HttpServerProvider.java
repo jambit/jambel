@@ -1,17 +1,20 @@
 package com.jambit.jambel.server.jetty;
 
+import javax.inject.Inject;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.jambit.jambel.config.JambelConfiguration;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import com.jambit.jambel.hub.jenkins.JenkinsAdapter;
+import com.jambit.jambel.server.HttpServer;
 
-import javax.inject.Inject;
-
-public class JettyServerProvider implements Provider<Server> {
+public class HttpServerProvider implements Provider<JenkinsAdapter> {
 
 	@Inject
 	private Injector injector;
@@ -20,7 +23,12 @@ public class JettyServerProvider implements Provider<Server> {
 	private JambelConfiguration configuration;
 
 	@Override
-	public Server get() {
+	public JenkinsAdapter get() {
+		Server server = createJettyServer();
+		return new HttpServer(server, configuration);
+	}
+	
+	private Server createJettyServer() {
 		Server server = new Server(configuration.getHttpPort());
 		ServletContextHandler servletContextHandler = new ServletContextHandler();
 		servletContextHandler.addEventListener(new GuiceServletContextListener() {
