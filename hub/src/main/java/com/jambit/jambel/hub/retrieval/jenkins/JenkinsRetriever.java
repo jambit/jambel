@@ -1,11 +1,8 @@
 package com.jambit.jambel.hub.retrieval.jenkins;
 
-import com.google.common.io.CharStreams;
-import com.google.gson.Gson;
-import com.jambit.jambel.hub.jobs.Job;
-import com.jambit.jambel.hub.jobs.JobState;
-import com.jambit.jambel.hub.retrieval.JobRetriever;
-import com.jambit.jambel.hub.retrieval.JobStateRetriever;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -13,9 +10,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
+import com.google.common.io.CharStreams;
+import com.google.gson.Gson;
+import com.jambit.jambel.hub.jobs.Job;
+import com.jambit.jambel.hub.jobs.JobState;
+import com.jambit.jambel.hub.retrieval.JobRetriever;
+import com.jambit.jambel.hub.retrieval.JobStateRetriever;
 
 public class JenkinsRetriever implements JobRetriever, JobStateRetriever {
 
@@ -39,26 +39,24 @@ public class JenkinsRetriever implements JobRetriever, JobStateRetriever {
 		public JobState.Result result;
 	}
 
-	private <T> T getJson(String url, Class<T> clazz) {
+	private <T> T getJson(String url, Class<T> clazz) throws IOException {
 		HttpClient client = new DefaultHttpClient();
 		Gson gson = new Gson();
 
-		try {
-			HttpResponse response = client.execute(new HttpGet(url));
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-				String json = CharStreams.toString(reader);
-				return gson.fromJson(json, clazz);
-			} else {
-				throw new RuntimeException("retrieving JSON object from " + url + " resulted in " + response.getStatusLine().getReasonPhrase());
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		HttpResponse response = client.execute(new HttpGet(url));
+		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
+			String json = CharStreams.toString(reader);
+			return gson.fromJson(json, clazz);
+		}
+		else {
+			throw new RuntimeException("retrieving JSON object from " + url + " resulted in "
+					+ response.getStatusLine().getReasonPhrase());
 		}
 	}
 
 	@Override
-	public Job retrieve(URL jobUrl) {
+	public Job retrieve(URL jobUrl) throws IOException {
 		String url = jsonUrlFor(jobUrl);
 		JsonJob jsonJob = getJson(url, JsonJob.class);
 
@@ -67,7 +65,7 @@ public class JenkinsRetriever implements JobRetriever, JobStateRetriever {
 
 
 	@Override
-	public JobState retrieve(Job job) {
+	public JobState retrieve(Job job) throws IOException {
 		String url = jsonUrlFor(job.getUrl());
 		JsonJob jsonJob = getJson(url, JsonJob.class);
 

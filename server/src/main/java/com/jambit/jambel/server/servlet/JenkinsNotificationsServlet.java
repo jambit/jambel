@@ -2,7 +2,7 @@ package com.jambit.jambel.server.servlet;
 
 import com.google.common.base.Optional;
 import com.google.gson.Gson;
-import com.jambit.jambel.hub.JobStatusHub;
+import com.jambit.jambel.hub.JobStatusReceiver;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
 import org.slf4j.MDC;
@@ -19,10 +19,10 @@ import java.io.InputStreamReader;
 @Singleton
 public class JenkinsNotificationsServlet extends HttpServlet {
 
-	private final JobStatusHub hub;
+	private final JobStatusReceiver hub;
 
 	@Inject
-	public JenkinsNotificationsServlet(JobStatusHub hub) {
+	public JenkinsNotificationsServlet(JobStatusReceiver hub) {
 		this.hub = hub;
 	}
 
