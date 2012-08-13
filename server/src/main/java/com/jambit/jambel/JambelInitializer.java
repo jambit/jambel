@@ -1,16 +1,18 @@
 package com.jambit.jambel;
 
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.net.HostAndPort;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.hub.JobStatusHub;
+import com.jambit.jambel.hub.init.JobInitializer;
 import com.jambit.jambel.light.SignalLight;
 import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.server.HttpServer;
 import com.jambit.jambel.server.ServerModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
 
 public class JambelInitializer {
 
@@ -18,13 +20,16 @@ public class JambelInitializer {
 
 	private final JobStatusHub hub;
 
+	private final JobInitializer jobInitializer;
+
 	private final SignalLight signalLight;
 
 	private final HttpServer server;
 
 	@Inject
-	public JambelInitializer(JobStatusHub hub, SignalLight signalLight, HttpServer server) {
+	public JambelInitializer(JobStatusHub hub, JobInitializer jobInitializer, SignalLight signalLight, HttpServer server) {
 		this.hub = hub;
+		this.jobInitializer = jobInitializer;
 		this.signalLight = signalLight;
 		this.server = server;
 	}
@@ -47,13 +52,14 @@ public class JambelInitializer {
 		HostAndPort hostAndPort = configuration.getHostAndPort();
 		if (signalLight.isAvailable()) {
 			logger.info("signal light is available at {}", hostAndPort);
-		} else {
+		}
+		else {
 			logger.warn("signal light is not available at {}", hostAndPort);
 		}
 	}
 
 	private void initHub() {
-		hub.initJobs();
+		jobInitializer.initJobs();
 		try {
 			hub.updateSignalLight();
 		}

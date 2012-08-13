@@ -1,11 +1,12 @@
-package com.jambit.jambel.hub.jenkins;
+package com.jambit.jambel.hub.retrieval.jenkins;
 
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
-import com.jambit.jambel.hub.JobStateRetriever;
-import com.jambit.jambel.hub.JobRetriever;
 import com.jambit.jambel.hub.jobs.Job;
 import com.jambit.jambel.hub.jobs.JobState;
+import com.jambit.jambel.hub.retrieval.JobRetriever;
+import com.jambit.jambel.hub.retrieval.JobStateRetriever;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;

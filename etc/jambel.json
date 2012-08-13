@@ -1,13 +1,23 @@
 {
     "jobs": [
-        "http://localhost:8000/job/test1/",
-        "http://localhost:8000/job/test2/",
-        "http://localhost:8000/job/fdfsdfasgwg/"
+    	{
+    		"jenkinsJobUrl" : "http://o2cat2.dev.jambit.com:8090/job/O2%20CAT%202/",
+    		"updateMode" : posting
+    	},
+    	{
+    		"jenkinsJobUrl" : "http://o2cat2.dev.jambit.com:8090/job/TPT_CAT2/",
+    		"updateMode" : polling,
+    		"pollingInterval" : 5000
+    	},
+    	{
+    		"jenkinsJobUrl" : "http://o2cat2.dev.jambit.com:8090/job/TPT_CAT2_roundtrip/",
+    		"updateMode" : posting
+    	}
     ],
 
     "signalLight": {
-		"green": "top",
-        "host": "192.168.178.93",
+		"green": "bottom",
+        "host": "ampel2.dev",
         "port": 10001,
         "readTimeout": 500
     },

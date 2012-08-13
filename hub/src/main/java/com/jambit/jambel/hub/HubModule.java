@@ -1,7 +1,9 @@
 package com.jambit.jambel.hub;
 
 import com.google.inject.AbstractModule;
-import com.jambit.jambel.hub.jenkins.JenkinsRetriever;
+import com.jambit.jambel.hub.retrieval.JobRetriever;
+import com.jambit.jambel.hub.retrieval.JobStateRetriever;
+import com.jambit.jambel.hub.retrieval.jenkins.JenkinsRetriever;
 
 public class HubModule extends AbstractModule {
 

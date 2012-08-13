@@ -1,17 +1,16 @@
 package com.jambit.jambel.config;
 
-import java.net.URL;
 import java.util.Collection;
 
 public final class JambelConfiguration {
 
-	private Collection<URL> jobs;
+	private Collection<JobConfiguration> jobs;
 
 	private SignalLightConfiguration signalLight;
 
 	private int httpPort;
 
-	public Collection<URL> getJobs() {
+	public Collection<JobConfiguration> getJobs() {
 		return jobs;
 	}
 
@@ -22,5 +21,5 @@ public final class JambelConfiguration {
 	public int getHttpPort() {
 		return httpPort;
 	}
-}
 
+}
