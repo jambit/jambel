@@ -17,6 +17,8 @@ The file `/etc/jambel.json` is used for configuring the Jambel. All jobs that ar
 - the timeout that is used when waiting for a reply and upon establishing a TCP connection
 Furthermore, the port of the web interface can be configured.
 
+The app must be started within the jambel folder with the command `bin/jambel`.
+
 Web UI
 ------
 The web interface of the Jambel can be found at `http://<HOSTNAME>:<HTTP-PORT>/web/`. It can be used to see the last statuses of the jobs, the last sent configuration of the signal light and to reset the signal light.
