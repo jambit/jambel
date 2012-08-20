@@ -4,6 +4,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.google.common.base.Optional;
@@ -22,7 +23,8 @@ public class JobStatePoller {
 	private final JobStatusReceiver receiver;
 
 	@Inject
-	public JobStatePoller(ScheduledExecutorService executor, JobStateRetriever retriever, JobStatusReceiver receiver) {
+	public JobStatePoller(@Named("poller") ScheduledExecutorService executor, JobStateRetriever retriever,
+			JobStatusReceiver receiver) {
 		this.executor = executor;
 		this.retriever = retriever;
 		this.receiver = receiver;

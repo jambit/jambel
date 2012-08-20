@@ -31,6 +31,10 @@ public final class SignalLightConfiguration {
 		return green == SlotPosition.top ? 1 : 3;
 	}
 
+	public SlotPosition getGreen() {
+		return green;
+	}
+
 	public HostAndPort getHostAndPort() {
 		return HostAndPort.fromParts(host, port);
 	}

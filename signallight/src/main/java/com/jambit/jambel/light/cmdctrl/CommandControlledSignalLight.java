@@ -1,12 +1,12 @@
 package com.jambit.jambel.light.cmdctrl;
 
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,7 @@ import com.jambit.jambel.light.SignalLightStatus;
  * @author "Florian Rampp (Florian.Rampp@jambit.com)"
  * 
  */
+@Singleton
 public final class CommandControlledSignalLight implements SignalLight {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommandControlledSignalLight.class.getName());
@@ -83,36 +84,51 @@ public final class CommandControlledSignalLight implements SignalLight {
 		}
 	}
 
-	private Runnable sendNewStatus(SignalLightStatus newStatus) {
-		final Integer[] lightValues = toIntValues(newStatus);
-		return new Runnable() {
-			@Override
-			public void run() {
-				try {
-					sendCommand("set_all=" + Joiner.on(',').join(lightValues));
-				}
-				catch (SignalLightNotAvailableException e) {
-					logger.warn("could not update signal light", e);
-				}
+	private final class UpdateLightStatusTask implements Runnable {
+		private boolean failOnNextExecution = false;
+
+		private final SignalLightStatus newStatus;
+
+		public UpdateLightStatusTask(SignalLightStatus newStatus) {
+			this.newStatus = newStatus;
+		}
+
+		@Override
+		public void run() {
+			if (failOnNextExecution) {
+				throw new RuntimeException();
 			}
-		};
+
+			final Integer[] lightValues = toIntValues(newStatus);
+
+			try {
+				sendCommand("set_all=" + Joiner.on(',').join(lightValues));
+			}
+			catch (SignalLightNotAvailableException e) {
+				logger.warn("could not update signal light", e);
+			}
+		}
+
+		public void failOnNextExecution() {
+			failOnNextExecution = true;
+		}
 	}
 
-
-	private ScheduledFuture<?> future;
+	private UpdateLightStatusTask scheduledTask;
 
 	@Override
 	public void setNewStatus(SignalLightStatus newStatus) {
 		Optional<Integer> keepAliveInterval = configuration.getKeepAliveInterval();
 		if (keepAliveInterval.isPresent()) {
-			if (future != null) {
-				future.cancel(false);
+			if (scheduledTask != null) {
+				// get rid of the old task (this is the only way to do it, that sucks!)
+				scheduledTask.failOnNextExecution();
 			}
-			future = executor.scheduleWithFixedDelay(sendNewStatus(newStatus), 0, keepAliveInterval.get(),
-					TimeUnit.MILLISECONDS);
+			scheduledTask = new UpdateLightStatusTask(newStatus);
+			executor.scheduleWithFixedDelay(scheduledTask, 0, keepAliveInterval.get(), TimeUnit.MILLISECONDS);
 		}
 		else {
-			executor.execute(sendNewStatus(newStatus));
+			executor.execute(new UpdateLightStatusTask(newStatus));
 		}
 	}
 
