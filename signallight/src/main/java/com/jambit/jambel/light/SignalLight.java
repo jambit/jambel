@@ -6,20 +6,19 @@ public interface SignalLight {
 
 	SignalLightConfiguration getConfiguration();
 
-	/**
-	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
-	 */
 	void setNewStatus(SignalLightStatus newStatus);
 
 	// TODO: blink times, ...
 
 	/**
-	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
+	 * @throws SignalLightNotAvailableException if no connection can be established to the signal
+	 *             light
 	 */
 	SignalLightStatus getCurrentStatus();
 
 	/**
-	 * @throws SignalLightNotAvailableException if no connection can be established to the signal light
+	 * @throws SignalLightNotAvailableException if no connection can be established to the signal
+	 *             light
 	 */
 	void reset();
 

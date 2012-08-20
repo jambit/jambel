@@ -1,17 +1,18 @@
 package com.jambit.jambel.server.mvc;
 
-import com.jambit.jambel.hub.JobStatusHub;
-import com.jambit.jambel.light.SignalLight;
-import com.jambit.jambel.light.SignalLightNotAvailableException;
-import com.jambit.jambel.server.ServerModule;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.zdevra.guice.mvc.ModelMap;
 import org.zdevra.guice.mvc.annotations.Controller;
 import org.zdevra.guice.mvc.annotations.Model;
 import org.zdevra.guice.mvc.annotations.Path;
 import org.zdevra.guice.mvc.annotations.View;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
+import com.jambit.jambel.hub.JobStatusHub;
+import com.jambit.jambel.light.SignalLight;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
+import com.jambit.jambel.server.ServerModule;
 
 @Controller
 public class MainController {
@@ -36,8 +37,8 @@ public class MainController {
 
 		model.put("resetUrl", request.getRequestURL() + "/light/reset");
 		model.put("updateLightUrl", request.getRequestURL() + "/update");
-		model.put("lightWebUrl", "http://" + hub.getSignalLight().getConfiguration().getHostAndPort().getHostText() +
-				":80");
+		model.put("lightWebUrl", "http://" + hub.getSignalLight().getConfiguration().getHostAndPort().getHostText()
+				+ ":80");
 
 
 		return model;
@@ -47,13 +48,8 @@ public class MainController {
 	@View("postResult")
 	@Model("message")
 	public String update() {
-		try {
-			hub.updateSignalLight();
-			return "success";
-		}
-		catch (SignalLightNotAvailableException e) {
-			return e.getMessage();
-		}
+		hub.updateSignalLight();
+		return "success";
 	}
 
 	@Path("/light/reset")

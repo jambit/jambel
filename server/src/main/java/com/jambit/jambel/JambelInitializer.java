@@ -10,7 +10,6 @@ import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.hub.JobStatusHub;
 import com.jambit.jambel.hub.init.JobInitializer;
 import com.jambit.jambel.light.SignalLight;
-import com.jambit.jambel.light.SignalLightNotAvailableException;
 import com.jambit.jambel.server.HttpServer;
 import com.jambit.jambel.server.ServerModule;
 
@@ -60,12 +59,7 @@ public class JambelInitializer {
 
 	private void initHub() {
 		jobInitializer.initJobs();
-		try {
-			hub.updateSignalLight();
-		}
-		catch (SignalLightNotAvailableException e) {
-			logger.warn("could not update signal light");
-		}
+		hub.updateSignalLight();
 	}
 
 	private void startServer() {

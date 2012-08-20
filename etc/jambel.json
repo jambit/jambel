@@ -19,7 +19,8 @@
 		"green": "bottom",
         "host": "ampel2.dev",
         "port": 10001,
-        "readTimeout": 500
+        "readTimeout": 500,
+        "keepAliveInterval": 3000
     },
 
     "httpPort": 10000

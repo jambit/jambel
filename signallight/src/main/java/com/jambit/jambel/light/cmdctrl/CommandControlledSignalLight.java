@@ -1,14 +1,24 @@
 package com.jambit.jambel.light.cmdctrl;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.LightMode;
-import com.jambit.jambel.light.SignalLightStatus;
 import com.jambit.jambel.light.SignalLight;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.jambit.jambel.light.SignalLightNotAvailableException;
+import com.jambit.jambel.light.SignalLightStatus;
 
 /**
  * Sends ASCII commands using a {@link SignalLightCommandSender}.
@@ -18,14 +28,20 @@ import java.util.regex.Pattern;
  */
 public final class CommandControlledSignalLight implements SignalLight {
 
+	private static final Logger logger = LoggerFactory.getLogger(CommandControlledSignalLight.class.getName());
+
 	private final SignalLightConfiguration configuration;
 
 	private final SignalLightCommandSender commandSender;
 
+	private final ScheduledExecutorService executor;
+
 	@Inject
-	public CommandControlledSignalLight(SignalLightConfiguration configuration, SignalLightCommandSender commandSender) {
+	public CommandControlledSignalLight(SignalLightConfiguration configuration, SignalLightCommandSender commandSender,
+			@Named("signalLight") ScheduledExecutorService executor) {
 		this.configuration = configuration;
 		this.commandSender = commandSender;
+		this.executor = executor;
 	}
 
 	private Integer[] toIntValues(SignalLightStatus status) {
@@ -67,11 +83,37 @@ public final class CommandControlledSignalLight implements SignalLight {
 		}
 	}
 
+	private Runnable sendNewStatus(SignalLightStatus newStatus) {
+		final Integer[] lightValues = toIntValues(newStatus);
+		return new Runnable() {
+			@Override
+			public void run() {
+				try {
+					sendCommand("set_all=" + Joiner.on(',').join(lightValues));
+				}
+				catch (SignalLightNotAvailableException e) {
+					logger.warn("could not update signal light", e);
+				}
+			}
+		};
+	}
+
+
+	private ScheduledFuture<?> future;
+
 	@Override
 	public void setNewStatus(SignalLightStatus newStatus) {
-		Integer[] lightValues = toIntValues(newStatus);
-
-		sendCommand("set_all=" + Joiner.on(',').join(lightValues));
+		Optional<Integer> keepAliveInterval = configuration.getKeepAliveInterval();
+		if (keepAliveInterval.isPresent()) {
+			if (future != null) {
+				future.cancel(false);
+			}
+			future = executor.scheduleWithFixedDelay(sendNewStatus(newStatus), 0, keepAliveInterval.get(),
+					TimeUnit.MILLISECONDS);
+		}
+		else {
+			executor.execute(sendNewStatus(newStatus));
+		}
 	}
 
 	@Override

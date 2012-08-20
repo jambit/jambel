@@ -1,5 +1,6 @@
 package com.jambit.jambel.config;
 
+import com.google.common.base.Optional;
 import com.google.common.net.HostAndPort;
 
 public final class SignalLightConfiguration {
@@ -15,6 +16,8 @@ public final class SignalLightConfiguration {
 	private int readTimeout;
 
 	private SlotPosition green;
+
+	private Integer keepAliveInterval;
 
 	public int getNumberForGreen() {
 		return green == SlotPosition.top ? 3 : 1;
@@ -34,6 +37,10 @@ public final class SignalLightConfiguration {
 
 	public int getReadTimeoutInMs() {
 		return readTimeout;
+	}
+
+	public Optional<Integer> getKeepAliveInterval() {
+		return Optional.fromNullable(keepAliveInterval);
 	}
 
 }

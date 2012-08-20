@@ -86,12 +86,7 @@ public final class JobStatusHub implements JobStatusReceiver {
 		}
 
 		// UPDATE SIGNAL LIGHT
-		try {
-			updateLightStatus();
-		}
-		catch (SignalLightNotAvailableException e) {
-			logger.warn("could not update signal light", e);
-		}
+		updateLightStatus();
 	}
 
 	private JobState calcNewState(Job job, JobState.Phase newPhase, Optional<JobState.Result> newResult) {
