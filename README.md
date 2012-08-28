@@ -23,6 +23,12 @@ The app must be started within the jambel folder with the command `bin/jambel`.
 The web interface of the Jambel can be found at `http://<HOSTNAME>:<HTTP-PORT>/web/`. It can be used to see the last statuses of the jobs, the last sent configuration of the signal light and to reset the signal light.
 
 
+Configuring the Jenkins for POSTing
+-----------------------------------
+Add the [Notification Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Notification+Plugin) to each Jenkins that shall post its jobs' states to this server.
+In the configuration of each job, add an HTTP Notification Endpoint that POSTs to `http://<HOSTNAME-OF-JAMBEL-SERVER>:<PORT>/web/jobStatusUpdate`.
+
+
 Contributing
 ------------
 The project is built with [Gradle](http://www.gradle.org/). Use the commited Gradle wrapper script to obtain Gradle. Type `./gradlew tasks` to get an overview of executable Gradle tasks. The task `distZip` is used to build a ZIP file that can be distributed.
