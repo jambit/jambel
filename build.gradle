@@ -47,3 +47,6 @@ applicationDistribution.from('etc') {
 }
 applicationDistribution.from project.findProject(':server').file("webapp"), { into 'webapp' }
 applicationDistribution.from configurations.distLibs, { into 'lib' }
+
+
+apply plugin: 'eclipse'
