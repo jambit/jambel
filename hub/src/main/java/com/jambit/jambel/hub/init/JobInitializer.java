@@ -62,7 +62,7 @@ public class JobInitializer {
 			}
 			catch (IOException e) {
 				logger.warn("could not retrieve job or its last build status at {}, permanently removing this job",
-						jobUrl);
+						jobUrl, e);
 			}
 		}
 	}
