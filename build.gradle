@@ -7,6 +7,10 @@ subprojects {
 
     apply plugin: 'java'
 
+	apply plugin: 'maven'
+
+	apply plugin: 'eclipse'
+
 	sourceCompatibility = 1.6
 
 	repositories {
@@ -47,6 +51,3 @@ applicationDistribution.from('etc') {
 }
 applicationDistribution.from project.findProject(':server').file("webapp"), { into 'webapp' }
 applicationDistribution.from configurations.distLibs, { into 'lib' }
-
-
-apply plugin: 'eclipse'
