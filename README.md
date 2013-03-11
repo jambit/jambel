@@ -33,6 +33,15 @@ Contributing
 ------------
 The project is built with [Gradle](http://www.gradle.org/). Use the commited Gradle wrapper script to obtain Gradle. Type `./gradlew tasks` to get an overview of executable Gradle tasks. The task `distZip` is used to build a ZIP file that can be distributed.
 
+Modules
+-------
+The jambel control consists of the following five modules:
+
+1. **config**: loads configuration from a JSON file and hosts the configuration classes for other modules
+2. **signallight**: allows controlling a signal light, like configuring blink times, setting individual light statuses, and retrieving the current status; depends on config module
+3. **hub**: Contains the logic of retrieving intial job statuses, aggregating multiple job statuses, and using a signal light for displaying the aggregated state; depends on config and signallight modules
+4. **server**: Sets up the jambel as a standalone web application using Jetty. Offers a simple web interface and an endpoint for HTTP POSTs of the Jenkins Notification plugin; depends on config and hub modules
+
 
 Potential extensions
 --------------------
