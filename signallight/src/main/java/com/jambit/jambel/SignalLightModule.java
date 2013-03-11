@@ -6,9 +6,11 @@ import java.util.concurrent.ThreadFactory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
+import com.jambit.jambel.config.ConfigModule;
 import com.jambit.jambel.config.JambelConfiguration;
 import com.jambit.jambel.config.SignalLightConfiguration;
 import com.jambit.jambel.light.SignalLight;
@@ -32,4 +34,11 @@ public class SignalLightModule extends AbstractModule {
 		return config.getSignalLightConfiguration();
 	}
 
+	/**
+	 * Creates a new signal light with the JSON config found at the given path.
+	 */
+	public static SignalLight create(String configFilePath) {
+		return Guice.createInjector(new ConfigModule(configFilePath), new SignalLightModule()).getInstance(SignalLight.class);
+	}
+	
 }
